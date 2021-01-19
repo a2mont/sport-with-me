@@ -1,7 +1,7 @@
 {
-  "name": "sport_with_me",
+  "name": "sport-with-me",
   "version": "1.0.0",
-  "description": "Bachelor project",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js"
