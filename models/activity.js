@@ -19,8 +19,9 @@ const activitySchema = new Mongoose.Schema(
             type: Date,
             required : true,
         },
-        participants: {
-            type: [Number],
+        creator: {
+            type: Number,
+            required: true,
             ref : 'User',
         },
         outdoor: {
@@ -33,18 +34,18 @@ const activitySchema = new Mongoose.Schema(
     {timestamps: true}
 );
 
-userSchema.method('toClient', function(){
+activitySchema.method('toClient', function(){
     var obj = this.toObject();
 
     // Rename fields
     obj.id = obj._id;
+    // ------- Question ----------- How to Rename participants
 
     // Delete fields
     delete obj._id;
     delete obj.__v;
     delete obj.createdAt;
     delete obj.updatedAt;
-    delete obj.password;
 
     return obj;
 });
