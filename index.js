@@ -6,6 +6,7 @@ const AutoIncrement = require('mongoose-auto-increment');
 const Swagger = require('./middlewares/swagger');
 const SwaggerUi = require('koa2-swagger-ui');
 const Routes = require('./routes');
+const Cors = require('@koa/cors');
 
 // Options to use with mongoose (mainly to avoid deprecacy warnings)
 const mongooseOptions = {
@@ -51,17 +52,22 @@ const swaggerOptions = {
 const swagger = Swagger(swaggerOptions);
 
 // Build the UI for swagger and expose it on the /doc endpoint
-const swaggerUi = SwaggerUi({
+/* const swaggerUi = SwaggerUi({
     routePrefix: '/doc',
     swaggerOptions: {
         url: swaggerOptions.path,
     }
-});
-
+}); */
 // Register all middlewares, in the right order
 app
+    .use(Cors())
     .use(swagger)
-    .use(swaggerUi)
+    .use(SwaggerUi.koaSwagger({
+        routePrefix: '/doc',
+        swaggerOptions: {
+            url: swaggerOptions.path,
+        }
+    }))
     .use(bodyParser())
     .use(router.routes())
     .use(router.allowedMethods())

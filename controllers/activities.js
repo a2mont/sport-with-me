@@ -13,30 +13,18 @@ const Activity = require('../models/activity');
  *              id:
  *                  description: id of the activity
  *                  type: Number
- *              price:
- *                  description: price of the activity
- *                  type: Number
  *              sport:
  *                  description: sport type of the activity
  *                  type: string
- *              date:
- *                  description: date of the activity
- *                  type: Date
  *              creator:
  *                  description: creator of the activity
  *                  $ref: '#/components/schemas/User'
- *              outdoor:
- *                  description: is the activity outdoor
- *                  type: Boolean
- *              public:
- *                  description: is the activity public
- *                  type: Boolean
  * 
  *      ActivityPartial:
  *       properties:
- *         sport:
+ *          sport:
  *           type: string
- *         creator: 
+ *          creator: 
  *           type: object
  *           properties: 
  *             id: 
@@ -49,6 +37,11 @@ const Activity = require('../models/activity');
  *         - sport
  *         - creator
  *         - date
+ * 
+ *      ActivitiesArray:
+ *         type: array
+ *         items: 
+ *           $ref: '#/components/schemas/Activity'
  */
 
  let controller = {
@@ -67,32 +60,33 @@ const Activity = require('../models/activity');
      * @swagger
      * 
      * /activities/:
-     *   post:
-     *     summary: create a new activity
-     *     tags: 
-     *       - activities
+     *  post:
+     *      summary: create a new activity
+     *      tags: 
+     *          - activities
      *      requestBody:
      *          required: true
      *          content:
      *              application/json:
      *                  schema: 
-     *                      $ref: '#/components/schemas/BookPartial'
-     *     responses:
-     *       '201':
-     *         description: Book created
-     *         content:
-     *           application/json:
-     *             schema:
-     *               $ref: '#/components/schemas/Book'
-     *       '400':
-     *         description: Invalid request
-     *       '401':
-     *         description: Unauthorized
+     *                      $ref: '#/components/schemas/ActivityPartial'
+     *      responses:
+     *          '201':
+     *              description: Activity created
+     *              content:
+     *                  application/json:
+     *                      schema:
+     *                          $ref: '#/components/schemas/Activity'
+     *          '400':
+     *              description: Invalid request
+     *          '401':
+     *              description: Unauthorized
      * 
      */
     create: async (ctx) => {
         try{
-            const user = await User.findById(ctx.request.body.owner.id);
+            const user = await User.findById(ctx.request.body.creator.id);
+            console.log(user);
             if(!user) return ctx.status = 400;
             let activity = new Activity({
                 sport: ctx.request.body.sport,
@@ -101,11 +95,62 @@ const Activity = require('../models/activity');
             });
             activity = await activity.save();
             await Activity.populate(activity, {path: 'creator'});
-            ctx.body = book.toClient();
+            ctx.body = activity.toClient();
             ctx.status = 201;
         } catch (err) {
+            console.log(err);
             ctx.status = 400;
         }
+    },
+
+    /**
+     * @swagger
+     * 
+     * /activities/:
+     *   get:
+     *     summary: list all activities
+     *     tags: 
+     *       - activities
+     *     responses:
+     *       '200':
+     *         description: success
+     *         content:
+     *           application/json:
+     *             schema:
+     *              $ref: '#/components/schemas/ActivitiesArray'
+     * 
+     */
+
+    list: async (ctx) => {
+        const activities = await Activity.find({}).exec();
+        for(let i = 0; i < activities.length; i++) {
+            activities[i] = activities[i].toClient();
+        }
+        ctx.body = activities;
+    },
+    /**
+     * @swagger
+     * 
+     * /activities/:
+     *   delete:
+     *     summary: delete all activities
+     *     operationId: clearActivities
+     *     tags: 
+     *       - activities
+     *     responses:
+     *       '204':
+     *         description: Activities deleted
+     *       '401':
+     *         description: Unauthorized
+     *       '409':
+     *         description: Conflict with dependent resources
+     * 
+     */
+    clear: async (ctx) => {
+        //const n = await Activity.countDocuments({creator: ctx.user._id}).exec();
+        //if(n > 0) return ctx.status = 409;
+        await Activity.deleteMany().exec();
+        ctx.status = 204;
     },
  }
  module.exports = controller;

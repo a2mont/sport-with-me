@@ -9,15 +9,15 @@ const activitySchema = new Mongoose.Schema(
         },
         location: {
             type: Mongoose.Schema.Types.Point,
-            required: true,
+            //required: true,
         },
         sport: {
             type: String,
-            required: true,
+            //required: true,
         },
         date: {
             type: Date,
-            required : true,
+            //required : true,
         },
         creator: {
             type: Number,
@@ -39,6 +39,10 @@ activitySchema.method('toClient', function(){
 
     // Rename fields
     obj.id = obj._id;
+    obj.creator = {
+        id: obj.creator._id,
+        email: obj.creator.email,
+    };
     // ------- Question ----------- How to Rename participants
 
     // Delete fields

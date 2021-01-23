@@ -7,21 +7,30 @@ const Activity = require('../models/activity');
  * components:
  *  schemas:
  *      User:
- *          description: Object representing an user
  *          type: object    
  *          properties:
  *              id:
- *                  description: id of the user
  *                  type: Number
- *                  example: 42   
  *              firstname:
- *                  description: first name of the user
  *                  type: string
- *                  example: John
  *              lastname:
- *                  description: last name of the user
  *                  type: string
- *                  example: Doe
+ *              email:
+ *                  type: string
+ *      UserPartial: 
+ *          type: object
+ *          properties:
+ *              email:
+ *                  type: string
+ *              password:
+ *                  type: string
+ *          required:
+ *              - email
+ *              - password
+ *      UsersArray:
+ *         type: array
+ *         items: 
+ *           $ref: '#/components/schemas/User'
  */
 
  let controller = {
@@ -40,27 +49,26 @@ const Activity = require('../models/activity');
      * @swagger
      * 
      * '/users/{id}':
-     * get:
-     *  tags:
-     *      - users
+     *  get:
      *      summary: Gets one user
-     *  parameters:
-     *      - name: id
-     *      in: path
-     *      description: The id of the user
-     *      required: true
-     *      schema:
-     *          type: string
-     *          example: '42'
-     *  responses:
-     *      '200':
-     *          description: The requested user
-     *          content:
-     *              application/json:
-     *                  schema:
-     *                      - $ref: '#/components/schemas/User'
-     *      '404':
-     *          description: User not found
+     *      tags:
+     *          - users
+     *      parameters:
+     *          - name: id
+     *            in: path
+     *            description: The id of the user
+     *            required: true
+     *            schema:
+     *              type: string
+     *      responses:
+     *          '200':
+     *              description: The requested user
+     *              content:
+     *                  application/json:
+     *                      schema:
+     *                          - $ref: '#/components/schemas/User'
+     *          '404':
+     *              description: User not found
      * 
      */
     read: async(ctx) => {
@@ -70,36 +78,44 @@ const Activity = require('../models/activity');
     /**
      * @swagger
      * 
-     * put:
-     *  tags:
-     *      - users
-     *      summary: Gets one user
-     *  parameters:
-     *      - name: id
-     *      in: path
-     *      description: The id of the user
-     *      required: true
-     *      schema:
-     *          type: string
-     *          example: '42'
-     *      requestBody:
-     *          description: The user to update
-     *          content:
-     *               application/json:
-     *                   schema:
-     *                       $ref: '#/components/schemas/User'
-     *       responses:
-     *           '200':
-     *           description: The updated user
-     *           content:
-     *               application/json:
-     *               schema:
-     *                   $ref: '#/components/schemas/User'
+     * /users/{id}:
+     *   put:
+     *     summary: update a user by id
+     *     operationId: updateUser
+     *     tags: 
+     *       - users
+     *     parameters:
+     *       - name: id
+     *         in: path
+     *         required: true
+     *         description: the id of the user to update
+     *         schema: 
+     *           type: string
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema: 
+     *             $ref: '#/components/schemas/UserPartial'
+     *     responses:
+     *       '200':
+     *         description: success
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/User'
+     *       '404':
+     *         description: User not found
+     *       '400':
+     *         description: Invalid request body
+     *       '401':
+     *         description: Unauthorized
+     * 
      */
     update: async (ctx) => {
         const user = ctx.user;
         user.email = ctx.request.body.email;
-        user.password = ctx.read.body.email;
+        user.password = ctx.request.body.password;
         await user.save();
         ctx.body = user.toClient();
     },
@@ -108,31 +124,30 @@ const Activity = require('../models/activity');
      * @swagger
      * 
      * '/users/{id}':
-     * delete:
-     *  tags:
-     *      - users
-     *      summary: Gets one user
-     *  parameters:
-     *      - name: id
-     *      in: path
-     *      description: The id of the user
-     *      required: true
-     *      schema:
-     *          type: string
-     *          example: '42'
-     *  responses:
-     *      '204':
-     *          description: No description
-     *          content:
-     *              application/json:
-     *                  schema:
-     *                      - $ref: '#/components/schemas/User'
-     *      '404':
-     *          description: User not found
+     *  delete:
+     *      summary: Deletes one user
+     *      tags:
+     *          - users
+     *      parameters:
+     *          - name: id
+     *            in: path
+     *            description: The id of the user
+     *            required: true
+     *            schema:
+     *              type: string
+     *      responses:
+     *          '204':
+     *              description: No description
+     *              content:
+     *                  application/json:
+     *                      schema:
+     *                          - $ref: '#/components/schemas/User'
+     *          '404':
+     *              description: User not found
      * 
      */
     delete: async (ctx) => {
-        const n = await Activity.countDocuments({owner: ctx.user._id}).exec();
+        const n = await Activity.countDocuments({creator: ctx.user._id}).exec();
         if(n > 0) return ctx.status = 409;
         await User.findByIdAndDelete(ctx.user._id).exec();
         ctx.status = 204;
@@ -153,9 +168,7 @@ const Activity = require('../models/activity');
      *         content:
      *           application/json:
      *             schema:
-     *              type: array
-     *                  items:
-     *                      $ref: '#/components/schemas/UsersArray'
+     *              $ref: '#/components/schemas/UsersArray'
      * 
      */
 
@@ -186,11 +199,53 @@ const Activity = require('../models/activity');
      * 
      */
     clear: async (ctx) => {
-        const n = await Activity.countDocuments.exec();
-        if(n > 0) return ctx.status = 409;
+        //const n = await Activity.countDocuments({creator: ctx.user._id}).exec();
+        //if(n > 0) return ctx.status = 409;
         await User.deleteMany().exec();
         ctx.status = 204;
-    }
+    },
+    /**
+     * @swagger
+     * 
+     * /users/:
+     *  post:
+     *      summary: create a new user
+     *      tags: 
+     *          - users
+     *      requestBody:
+     *          required: true
+     *          content:
+     *              application/json:
+     *                  schema: 
+     *                      $ref: '#/components/schemas/UserPartial'
+     *      responses:
+     *          '201':
+     *              description: User created
+     *              content:
+     *                  application/json:
+     *                      schema:
+     *                          $ref: '#/components/schemas/User'
+     *          '400':
+     *              description: Invalid request
+     *          '401':
+     *              description: Unauthorized
+     * 
+     */
+    create: async (ctx) => {
+        try{
+            let user = new User({
+                email: ctx.request.body.email,
+                password: ctx.request.body.password,
+            });
+            user = await user.save();
+            await User.populate(user, {path: 'creator'});
+            ctx.body = user.toClient();
+            ctx.status = 201;
+        } catch (err) {
+            console.log(err)
+            ctx.status = 400;
+        }
+    },
 
  }
  module.exports = controller;
