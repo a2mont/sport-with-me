@@ -7,5 +7,5 @@
 const KoaJwt = require('koa-jwt');
 
 module.exports = KoaJwt({
-    secret: 'secrettest',
+    secret: process.env.JWT_SECRET,
 });

@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const Activity = require('../models/activity');
+const Bcrypt = require('bcrypt');
 
 /**
  * @swagger
@@ -17,12 +18,26 @@ const Activity = require('../models/activity');
  *                  type: string
  *              email:
  *                  type: string
- *      UserPartial: 
+ *      UserLogin: 
  *          type: object
  *          properties:
  *              email:
  *                  type: string
  *              password:
+ *                  type: string
+ *          required:
+ *              - email
+ *              - password
+ *      UserPartials: 
+ *          type: object
+ *          properties:
+ *              email:
+ *                  type: string
+ *              password:
+ *                  type: string
+ *              firstname: 
+ *                  type: string
+ *              lastname: 
  *                  type: string
  *          required:
  *              - email
@@ -80,7 +95,7 @@ const Activity = require('../models/activity');
      * 
      * /users/{id}:
      *   put:
-     *     summary: update a user by id
+     *     summary: Updates a user by id
      *     operationId: updateUser
      *     tags: 
      *       - users
@@ -91,6 +106,8 @@ const Activity = require('../models/activity');
      *         description: the id of the user to update
      *         schema: 
      *           type: string
+     *     security:
+     *       - bearerAuth: []
      *     requestBody:
      *       required: true
      *       content:
@@ -115,7 +132,7 @@ const Activity = require('../models/activity');
     update: async (ctx) => {
         const user = ctx.user;
         user.email = ctx.request.body.email;
-        user.password = ctx.request.body.password;
+        user.password = await Bcrypt.hash(ctx.request.body.password, 10);
         await user.save();
         ctx.body = user.toClient();
     },
@@ -135,6 +152,8 @@ const Activity = require('../models/activity');
      *            required: true
      *            schema:
      *              type: string
+     *      security:
+     *          - bearerAuth: []
      *      responses:
      *          '204':
      *              description: No description
@@ -144,6 +163,8 @@ const Activity = require('../models/activity');
      *                          - $ref: '#/components/schemas/User'
      *          '404':
      *              description: User not found
+     *          '409':
+     *              description: Conflict with dependent resources
      * 
      */
     delete: async (ctx) => {
@@ -189,6 +210,8 @@ const Activity = require('../models/activity');
      *     operationId: clearUsers
      *     tags: 
      *       - users
+     *     security:
+     *       - bearerAuth: []
      *     responses:
      *       '204':
      *         description: Users deleted
@@ -199,52 +222,10 @@ const Activity = require('../models/activity');
      * 
      */
     clear: async (ctx) => {
-        //const n = await Activity.countDocuments({creator: ctx.user._id}).exec();
-        //if(n > 0) return ctx.status = 409;
+        const n = await Activity.countDocuments().exec();
+        if(n > 0) return ctx.status = 409;
         await User.deleteMany().exec();
         ctx.status = 204;
-    },
-    /**
-     * @swagger
-     * 
-     * /users/:
-     *  post:
-     *      summary: create a new user
-     *      tags: 
-     *          - users
-     *      requestBody:
-     *          required: true
-     *          content:
-     *              application/json:
-     *                  schema: 
-     *                      $ref: '#/components/schemas/UserPartial'
-     *      responses:
-     *          '201':
-     *              description: User created
-     *              content:
-     *                  application/json:
-     *                      schema:
-     *                          $ref: '#/components/schemas/User'
-     *          '400':
-     *              description: Invalid request
-     *          '401':
-     *              description: Unauthorized
-     * 
-     */
-    create: async (ctx) => {
-        try{
-            let user = new User({
-                email: ctx.request.body.email,
-                password: ctx.request.body.password,
-            });
-            user = await user.save();
-            await User.populate(user, {path: 'creator'});
-            ctx.body = user.toClient();
-            ctx.status = 201;
-        } catch (err) {
-            console.log(err)
-            ctx.status = 400;
-        }
     },
 
  }

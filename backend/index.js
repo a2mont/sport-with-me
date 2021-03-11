@@ -12,6 +12,8 @@ const Cors = require('@koa/cors');
 const mongooseOptions = {
     useCreateIndex: true,
     useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
 };
 // Connect to the MongoDB database
 Mongoose.connect('mongodb://localhost:27017/sport-with-me', mongooseOptions);
@@ -43,6 +45,7 @@ const swaggerOptions = {
     apis: [
         './controllers/activities.js',
         './controllers/users.js',
+        './controllers/auth.js',
     ],
     // where to publish the document
     path: '/swagger.json',
@@ -71,4 +74,4 @@ app
     .use(bodyParser())
     .use(router.routes())
     .use(router.allowedMethods())
-    .listen(3000);
+    .listen(process.env.PORT);

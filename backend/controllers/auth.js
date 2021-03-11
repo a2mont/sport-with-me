@@ -30,7 +30,7 @@ let controller = {
      *       content:
      *         application/json:
      *           schema: 
-     *             $ref: '#/components/schemas/UserPartial'
+     *             $ref: '#/components/schemas/UserLogin'
      *     responses:
      *       '200':
      *         description: Success
@@ -90,7 +90,7 @@ let controller = {
  *       content:
  *         application/json:
  *           schema: 
- *             $ref: '#/components/schemas/UserPartial'
+ *             $ref: '#/components/schemas/UserPartials'
  *     responses:
  *       '201':
  *         description: Created
@@ -113,7 +113,11 @@ let controller = {
         const password = await Bcrypt.hash(ctx.request.body.password, 10);
         const user = new User({
             email: ctx.request.body.email,
-            password
+            password,
+            name: {
+                firstname: ctx.request.body.firstname,
+                lastname: ctx.request.body.lastname
+            }
         });
         const ret = await user.save();
         ctx.body = ret.toClient();

@@ -8,7 +8,11 @@ const activitySchema = new Mongoose.Schema(
             type: Number,
         },
         location: {
-            type: Mongoose.Schema.Types.Point,
+            type:{
+                type: String,
+                enum: ['Point'],
+            },
+            coordinates: {type:Array}
             //required: true,
         },
         sport: {
@@ -39,7 +43,7 @@ activitySchema.method('toClient', function(){
 
     // Rename fields
     obj.id = obj._id;
-    obj.creator = {
+    obj.creator = {         // --------- Problème ici -----------
         id: obj.creator._id,
         email: obj.creator.email,
     };
