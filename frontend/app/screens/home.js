@@ -7,7 +7,7 @@ import FloatingButton from '../components/floatButton';
 export default function Home({navigation}) {
   return (
     <View style={globalStyles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate('Details')}>
+      <TouchableOpacity onPress={() => console.log('Open details of the activity')}>
         <Text>This is the Home page !</Text>
       </TouchableOpacity>  
       <FloatingButton />

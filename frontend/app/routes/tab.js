@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DrawerNavigator from './drawer';
-import Activities from '../screens/activities';
+import ActivitiesNavigator from './activityStack';
 import UserProfile from '../screens/userProfile';
 
 const {Navigator, Screen} = createBottomTabNavigator();
@@ -43,7 +43,7 @@ export default function BottomTabNavigator(){
           }}
         >
             
-            <Screen name='Activities' component={Activities} />
+            <Screen name='Activities' component={ActivitiesNavigator} />
             <Screen name='Home' component={DrawerNavigator} />
             <Screen name='User Profile' component={UserProfile} />
         </Navigator>

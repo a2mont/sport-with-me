@@ -16,7 +16,10 @@ export default function HomeNavigator({navigation}) {
                     headerLeft: () =>
                     <HeaderIcon navigation={navigation}/>
                 }}/>
-            <Screen name="Details" component={ActivityDetails} />
+            <Screen 
+                name="Details" 
+                component={ActivityDetails} 
+                options={{title:''}}/>
         </Navigator>
     );
 }
