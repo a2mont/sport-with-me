@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import AppLoading from 'expo-app-loading';
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Modal} from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import {globalStyles} from '../styles/global';
 import FloatingButton from '../components/floatButton';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
 import Api from '../api/api';
+import CreateActivity from './createActivity';
 
 export default function Home({navigation}) {
   const [userPos, setUserPos] = useState({
@@ -21,6 +23,7 @@ export default function Home({navigation}) {
     //{sport: 'tennis', date: '2021-08-03', location: {latitude:47.9, longitude:7.1}, key:'3'},
     //{sport: 'bilboquet', date: '2021-14-10',location: {latitude:46.7, longitude:7.16}, key:'4'},
   ]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const getCurrentLocation = () => {
     return new Promise((resolve,reject) => {
@@ -84,7 +87,26 @@ export default function Home({navigation}) {
           ))}
         </MapView>
         </View> 
-        <FloatingButton pressHandler={() => console.log('button pressed')}/>
+        <FloatingButton pressHandler={() => setModalVisible(true)}/>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+        >
+          <View style={styles.modalView}>
+            <View style={styles.modalIcon}>
+              <MaterialIcons 
+                name='close'
+                size={24}
+                onPress={() => setModalVisible(false)}
+              />
+            </View>
+            <View style={styles.modalContent}>
+              <CreateActivity addActivity={console.log('a')} />
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }else{
@@ -103,5 +125,26 @@ export default function Home({navigation}) {
 const styles = StyleSheet.create({
   map:{
     flex:1,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  modalIcon:{
+    alignItems: "flex-start",
+    marginBottom: 20
+  },
+  modalContent:{
+    alignItems: "center",
   }
 });

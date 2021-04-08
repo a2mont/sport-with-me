@@ -2,7 +2,7 @@ import React from 'react'
 import { createStackNavigator } from "@react-navigation/stack";
 import Home from "../screens/home";
 import ActivityDetails from "../screens/activityDetails";
-import HeaderIcon from '../components/headerIcon'
+import HeaderIcon from '../components/headerIcon';
 
 const {Navigator, Screen} = createStackNavigator();
 
