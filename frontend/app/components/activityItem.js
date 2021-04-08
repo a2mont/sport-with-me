@@ -4,7 +4,7 @@ import {StyleSheet, TouchableOpacity, Text} from 'react-native';
 
 export default function ActivityItem({ pressHandler, activity }) {
   return (
-    <TouchableOpacity onPress={() => pressHandler(activity.key)}>
+    <TouchableOpacity onPress={() => pressHandler(activity.id)}>
       <Text style={styles.item}>{activity.sport}</Text>
     </TouchableOpacity>
   )

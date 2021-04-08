@@ -2,12 +2,12 @@ import React from 'react';
 import { StyleSheet, Text, View, Image, ImageBackground } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-export default function FloatingButton(){
+export default function FloatingButton({pressHandler}){
     return(
         <View  style={styles.button}>
             <MaterialIcons 
             name='add' 
-            onPress={() => console.log('ayaya')} 
+            onPress={() => pressHandler()} 
             size={25} 
             style={styles.buttonIcon}/>
         </View>

@@ -19,6 +19,7 @@ const Activity = require('../models/activity');
  *              creator:
  *                  description: creator of the activity
  *                  $ref: '#/components/schemas/User'
+ *              
  * 
  *      ActivityPartial:
  *       properties:
@@ -33,10 +34,16 @@ const Activity = require('../models/activity');
  *             - id
  *          date:
  *               type: Date
+ *          latitude:
+ *               type: string
+ *          longitude: 
+ *               type: string
  *       required:
  *         - sport
  *         - creator
  *         - date
+ *         - latitude
+ *         - longitude
  * 
  *      ActivitiesArray:
  *         type: array
@@ -93,6 +100,10 @@ const Activity = require('../models/activity');
                 sport: ctx.request.body.sport,
                 creator: user._id,
                 date: ctx.request.body.date,
+                location:{
+                    latitude: ctx.request.body.latitude,
+                    longitude: ctx.request.body.longitude,
+                }
             });
             activity = await activity.save();
             await Activity.populate(activity, {path: 'creator'});

@@ -8,12 +8,12 @@ const activitySchema = new Mongoose.Schema(
             type: Number,
         },
         location: {
-            type:{
-                type: String,
-                enum: ['Point'],
+            latitude:{
+                type: Number,
             },
-            coordinates: {type:Array}
-            //required: true,
+            longitude:{
+                type: Number,
+            }
         },
         sport: {
             type: String,
