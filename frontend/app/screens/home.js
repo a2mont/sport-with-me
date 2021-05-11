@@ -12,8 +12,8 @@ import CreateActivity from './createActivity';
 export default function Home({navigation}) {
   const [userPos, setUserPos] = useState({
     location:{
-      latitude:46.6,
-      longitude:7.1,
+      latitude:46.8,
+      longitude:7.17,
     }
   });
   const [posLoaded,setPosLoaded] = useState(false);
@@ -24,6 +24,7 @@ export default function Home({navigation}) {
     //{sport: 'bilboquet', date: '2021-14-10',location: {latitude:46.7, longitude:7.16}, key:'4'},
   ]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [marker, setMarker] = useState(null);
 
   const getCurrentLocation = () => {
     return new Promise((resolve,reject) => {
@@ -31,8 +32,8 @@ export default function Home({navigation}) {
     });
   }
 
-  const pressHandler = (key) => {
-    const activity = activities.filter(activity => activity.key == key);
+  const pressHandler = (id) => {
+    const activity = activities.filter(activity => activity.id === id);
     navigation.navigate('Details', {activity: activity[0]});
   };
 
@@ -70,21 +71,40 @@ export default function Home({navigation}) {
             initialRegion={{
               latitude: userPos.location.latitude,
               longitude: userPos.location.longitude,
-              latitudeDelta: 0.0002,
-              longitudeDelta: 0.0002}
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01}
+            }
+            onPress={(e) => {
+              setMarker({
+                latitude: e.nativeEvent.coordinate.latitude,
+                longitude: e.nativeEvent.coordinate.longitude, 
+              });
+              console.log(marker)}
             }
         >
+          {
+            marker && 
+            <Marker 
+              coordinate={marker} 
+              title='Create activity'
+            >
+              <Callout onPress={() => setModalVisible(true)}>
+                <Text>Create activity</Text>
+              </Callout>
+            </Marker>
+          }
           {activities.map(activity =>(
             <Marker
             key={activity.id}
             coordinate={activity.location}
             title={activity.sport}
             >
-              <Callout onPress={() => pressHandler(activity.key)}>
+              <Callout onPress={() => pressHandler(activity.id)}>
                 <Text>{activity.sport}</Text>
               </Callout>
             </Marker>
-          ))}
+          ))
+          }
         </MapView>
         </View> 
         <FloatingButton pressHandler={() => setModalVisible(true)}/>
@@ -103,7 +123,7 @@ export default function Home({navigation}) {
               />
             </View>
             <View style={styles.modalContent}>
-              <CreateActivity addActivity={console.log('a')} />
+              <CreateActivity addActivity={(item) => console.log(item)} activityLocation={marker}/>
             </View>
           </View>
         </Modal>
@@ -127,6 +147,7 @@ const styles = StyleSheet.create({
     flex:1,
   },
   modalView: {
+    flex:1,
     margin: 20,
     backgroundColor: "white",
     borderRadius: 20,
@@ -142,9 +163,9 @@ const styles = StyleSheet.create({
   },
   modalIcon:{
     alignItems: "flex-start",
-    marginBottom: 20
   },
   modalContent:{
-    alignItems: "center",
+    backgroundColor:'gray',
+    flex:1,
   }
 });
