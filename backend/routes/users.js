@@ -7,7 +7,7 @@ module.exports = (router) => {
         .param('user_id', users.getById)
         .get('/users/:user_id', users.read)
         .get('/users/:user_id/activities/', activities.list)
-        //.post('/users/', users.create)
+        //.post('/users/', users.create)    Done with auth
         .put('/users/:user_id', jwt, users.update)
         .delete('/users/:user_id', jwt, users.delete)
         .get('/users/', users.list)

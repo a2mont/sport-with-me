@@ -8,7 +8,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 
 
-
 export default function ActivityForm({addActivity, activityLocation}){
     const sportsData = require('../assets/sports.json');
     const sportsList = sportsData.sports;

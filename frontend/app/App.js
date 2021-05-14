@@ -1,14 +1,28 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, {useContext} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
+import * as SecureStore from 'expo-secure-store';
+import {Provider as AuthProvider} from './context/authContext';
+import {Context as AuthContext} from './context/authContext';
 
-import BottomTabNavigator from "./routes/tab";
+import StartNavigator from './routes/startStack';
 
-export default function App() {
+
+function App({navigation}) {
+  const state = useContext(AuthContext);
+  console.log(state);
   return (
     <NavigationContainer>
-      <BottomTabNavigator />
+      <StartNavigator userToken={null}/>
     </NavigationContainer>
+  );
+}
+
+export default () => {
+  return(
+    <AuthProvider>
+        <App />
+    </AuthProvider>
   );
 }
