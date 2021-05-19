@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import AppLoading from 'expo-app-loading';
 import { StyleSheet, Text, View, TouchableOpacity, Modal} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import FloatingButton from '../components/floatButton';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
 import Api from '../api/api';
 import CreateActivity from './createActivity';
+import {Context as AuthContext} from '../context/authContext';
 
 export default function Home({navigation}) {
   const [userPos, setUserPos] = useState({
@@ -25,6 +26,7 @@ export default function Home({navigation}) {
   ]);
   const [modalVisible, setModalVisible] = useState(false);
   const [marker, setMarker] = useState(null);
+  const {state,dispatch} = useContext(AuthContext);
 
   const getCurrentLocation = () => {
     return new Promise((resolve,reject) => {
@@ -56,6 +58,12 @@ export default function Home({navigation}) {
     //console.log(activities);
   }
 
+  const addActivity = async (activity) => {
+    const newActivity = await Api.createActivity(17, activity, state.token);
+    setModalVisible(false);
+    loadActivities();
+  }
+
   useEffect(() => {
     loadActivities()
   }, []);
@@ -79,7 +87,8 @@ export default function Home({navigation}) {
                 latitude: e.nativeEvent.coordinate.latitude,
                 longitude: e.nativeEvent.coordinate.longitude, 
               });
-              console.log(marker)}
+              //console.log(marker)
+            }
             }
         >
           {
@@ -107,7 +116,6 @@ export default function Home({navigation}) {
           }
         </MapView>
         </View> 
-        <FloatingButton pressHandler={() => setModalVisible(true)}/>
 
         <Modal
           animationType="slide"
@@ -123,7 +131,7 @@ export default function Home({navigation}) {
               />
             </View>
             <View style={styles.modalContent}>
-              <CreateActivity addActivity={(item) => console.log(item)} activityLocation={marker}/>
+              <CreateActivity addActivity={addActivity} activityLocation={marker}/>
             </View>
           </View>
         </Modal>

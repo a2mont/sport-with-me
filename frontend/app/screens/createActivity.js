@@ -44,7 +44,7 @@ export default function ActivityForm({addActivity, activityLocation}){
                     time:'',
                     latitude: activityLocation.latitude, 
                     longitude: activityLocation.longitude}}
-                validationSchema={activitySchema}
+                //validationSchema={activitySchema}
                 onSubmit={(values, action) => {
                     action.resetForm();
                     addActivity(values);
@@ -141,7 +141,7 @@ export default function ActivityForm({addActivity, activityLocation}){
                                 />)
                             }
                         </View>
-                        <Button onPress={() => console.log(props.values)} title='Submit'/>
+                        <Button onPress={() => {props.handleSubmit(); console.log(props.isValidating + ' ' + props.isSubmitting)}} title='Submit'/>
                     </View>
                 )}
             </Formik>

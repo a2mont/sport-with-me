@@ -54,7 +54,7 @@ const createActivity = async (user, activity, jwt) => {
     try {
         const response = await Client.post('/activities/',
             {
-                sport: activity.sport,
+                sport: activity.sport.name,
                 creator: {
                     id: user.id
                 },
@@ -70,7 +70,7 @@ const createActivity = async (user, activity, jwt) => {
             }
         );
         if (response.status == CREATED){
-            console.log(response.data);
+            console.log('Created: \n' + response.data);
             return response.data;
         }else if (response.status == INVALID_REQUEST){
             console.log('Invalid request')
@@ -88,12 +88,13 @@ const createActivity = async (user, activity, jwt) => {
 
 const login = async (person) => {
     try {
+        //console.log(person);
         const response = await Client.post('/login', {
             email: person.email,
             password: person.password,
         });
         if(response.status == SUCCESS){
-            console.log(response.data);
+            //console.log(response.data);
             return response.data;
         }else if (response.status == NOT_FOUND){
             console.log('Could not register user, error status :' + response.status);
@@ -110,4 +111,5 @@ export default {
     getAllActivities,
     createUser,
     login,
+    createActivity,
 }

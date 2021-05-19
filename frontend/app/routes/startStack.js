@@ -9,10 +9,10 @@ const {Navigator, Screen} = createStackNavigator();
 export default function StartNavigator({navigation, userToken}) {
     return(
         <Navigator>
-            {userToken == null ? (
+            {userToken === null ? (
                 <Screen name="SignIn" component={LoginNavigator} />
             ) : (
-                <Screen name="Home" component={BottomTabNavigator} />
+                <Screen name="Home" component={BottomTabNavigator} options={{headerShown:false}}/>
             )}
         </Navigator>
     );

@@ -11,10 +11,10 @@ import StartNavigator from './routes/startStack';
 
 function App({navigation}) {
   const state = useContext(AuthContext);
-  console.log(state);
+  //console.log(state);
   return (
     <NavigationContainer>
-      <StartNavigator userToken={null}/>
+      <StartNavigator userToken={state.token}/>
     </NavigationContainer>
   );
 }

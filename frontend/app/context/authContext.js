@@ -1,4 +1,5 @@
 import dataContext from './dataContext';
+import Api from '../api/api';
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -21,22 +22,26 @@ const signup = dispatch => {
   };
 };
 
-const signin = dispatch => {
-  return ({email, password}) => {
-    // Do some API Request here
+const signin = (dispatch) => {
+  return async ({email, password}) => {
+    const token = await Api.login({email,password}).then(token => {
+    //console.log(token);
     console.log('Signin');
+
     dispatch({
       type: 'signin',
       payload: {
-        token: 'some access token here',
+        token: token,
         email,
       },
     });
+  });
   };
 };
 
 const signout = dispatch => {
   return () => {
+    console.log('signout');
     dispatch({type: 'signout'});
   };
 };
