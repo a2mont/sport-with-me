@@ -34,6 +34,8 @@ const Activity = require('../models/activity');
  *             - id
  *          date:
  *               type: Date
+ *          time:
+ *               type: string
  *          latitude:
  *               type: string
  *          longitude: 
@@ -100,6 +102,7 @@ const Activity = require('../models/activity');
                 sport: ctx.request.body.sport,
                 creator: user._id,
                 date: ctx.request.body.date,
+                time: ctx.request.body.time,
                 location:{
                     latitude: ctx.request.body.latitude,
                     longitude: ctx.request.body.longitude,

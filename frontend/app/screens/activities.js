@@ -110,7 +110,6 @@ export default function Activities({navigation}) {
             onRefresh={refreshHandler}
           />
         </View>
-        <FloatingButton/>
     </View>
   );
 }

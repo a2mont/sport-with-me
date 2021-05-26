@@ -66,8 +66,10 @@ let controller = {
                     ctx.status = 400;
                     reject();
                 } else {
+                    const id = user.id;
                     ctx.body = {
-                        token
+                        token,
+                        id,
                     };
                     ctx.status = 200;
                     resolve();

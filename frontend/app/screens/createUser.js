@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { StyleSheet, Button, TextInput, View, Text } from 'react-native';
 import { globalStyles } from '../styles/global.js';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import Api from '../api/api';
+import {Context as AuthContext} from '../context/authContext';
 
 const userSchema = yup.object({
     email: yup.string().required(),
@@ -13,15 +14,19 @@ const userSchema = yup.object({
   });
 
   export default function createUser({navigation}){
+    const {state, signup, signin} = useContext(AuthContext);
     return(
         <View style={globalStyles.container}>
             <Formik
-                initialValues={{email:'email', password:'password',firstname:'firstname', lastname:'lastname'}}
+                initialValues={{email:'', password:'',firstname:'', lastname:''}}
                 validationSchema={userSchema}
                 onSubmit={(values, action) => {
                     action.resetForm();
-                    var newUser = Api.createUser(values);
+                    const email = values.email;
+                    const password = values.password;
+                    const newUser = signup(values);
                     
+                    //navigation.navigate('Login');
                 }}
             >
                 {props => (

@@ -134,14 +134,14 @@ export default function ActivityForm({addActivity, activityLocation}){
                                     display="spinner"
                                     onChange={(event,val) => {
                                         //console.log(val);
-                                        props.values.time = moment(val).format('HH-mm');
+                                        props.values.time = moment(val).format('HH:mm');
                                         //console.log(props.values.time);
                                         timeChange(props.values.time);
                                     }}
                                 />)
                             }
                         </View>
-                        <Button onPress={() => {props.handleSubmit(); console.log(props.isValidating + ' ' + props.isSubmitting)}} title='Submit'/>
+                        <Button onPress={() => {props.handleSubmit();}} title='Submit'/>
                     </View>
                 )}
             </Formik>

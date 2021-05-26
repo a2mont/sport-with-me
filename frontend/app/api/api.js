@@ -1,10 +1,11 @@
 import Client from './client';
-
+//#region Status Codes
 const SUCCESS = 200;
 const CREATED = 201;
 const INVALID_REQUEST = 400;
 const NOT_FOUND = 404;
 const NOT_UNIQUE = 409; 
+//#endregion
 
 const getAllActivities = async () => {
     try{
@@ -50,27 +51,31 @@ const createUser = async (person) => {
 
 }
 
+
 const createActivity = async (user, activity, jwt) => {
     try {
-        const response = await Client.post('/activities/',
-            {
-                sport: activity.sport.name,
+        const bearer = "Bearer "+ jwt;
+        const id = parseInt(user);
+        const newActivity = {
+            sport: activity.sport.name,
                 creator: {
-                    id: user.id
+                    id: id
                 },
                 date: activity.date,
+                time: activity.time,
                 latitude: activity.latitude,
                 longitude: activity.longitude,
-                
-            }, 
+        };
+        console.log(newActivity);
+        const response = await Client.post('/activities/', newActivity, 
             {
                 headers: {
-                    token: jwt,
+                    Authorization: bearer,
                 },
             }
         );
         if (response.status == CREATED){
-            console.log('Created: \n' + response.data);
+            //console.log('Created: \n' + response.data);
             return response.data;
         }else if (response.status == INVALID_REQUEST){
             console.log('Invalid request')
@@ -107,9 +112,27 @@ const login = async (person) => {
     }
 } 
 
+const getUserInfos = async (id) => {
+    try {
+        const address = '/users/'+id;
+        const response = await Client.get(address);
+        if (response.status == SUCCESS){
+            //console.log(response.data);
+            return response.data;
+        } else {
+            console.log('User not found');
+            return null;
+        }
+    } catch (error) {
+        console.log('Error while getting user');
+        console.log(error);
+        return null;
+    }
+}
 export default {
     getAllActivities,
     createUser,
     login,
     createActivity,
+    getUserInfos,
 }

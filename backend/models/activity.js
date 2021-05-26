@@ -23,6 +23,9 @@ const activitySchema = new Mongoose.Schema(
             type: Date,
             //required : true,
         },
+        time:{
+            type: String,
+        },
         creator: {
             type: Number,
             required: true,

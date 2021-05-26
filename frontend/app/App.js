@@ -4,25 +4,17 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import * as SecureStore from 'expo-secure-store';
 import {Provider as AuthProvider} from './context/authContext';
-import {Context as AuthContext} from './context/authContext';
 
 import StartNavigator from './routes/startStack';
 
 
-function App({navigation}) {
-  const state = useContext(AuthContext);
-  //console.log(state);
+export default function App({navigation}) {
   return (
-    <NavigationContainer>
-      <StartNavigator userToken={state.token}/>
-    </NavigationContainer>
-  );
-}
-
-export default () => {
-  return(
     <AuthProvider>
-        <App />
+      <NavigationContainer>
+        <StartNavigator />
+      </NavigationContainer>
     </AuthProvider>
   );
 }
+

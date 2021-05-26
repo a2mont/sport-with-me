@@ -18,12 +18,7 @@ export default function Home({navigation}) {
     }
   });
   const [posLoaded,setPosLoaded] = useState(false);
-  const [activities,setActivities] = useState([
-    //{sport: 'basketball', date: '2021-06-14', location: {latitude:46.5, longitude:7.14}, key:'1'},
-    //{sport: 'football', date: '2021-05-12', location: {latitude:46.806403, longitude:7.153656}, key:'2'},
-    //{sport: 'tennis', date: '2021-08-03', location: {latitude:47.9, longitude:7.1}, key:'3'},
-    //{sport: 'bilboquet', date: '2021-14-10',location: {latitude:46.7, longitude:7.16}, key:'4'},
-  ]);
+  const [activities,setActivities] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [marker, setMarker] = useState(null);
   const {state,dispatch} = useContext(AuthContext);
@@ -41,6 +36,7 @@ export default function Home({navigation}) {
 
   const requestLoc = async () => {
     getCurrentLocation().then(position =>   {
+      //console.log(position)
       if(position){
         setUserPos({
           location:{
@@ -59,8 +55,10 @@ export default function Home({navigation}) {
   }
 
   const addActivity = async (activity) => {
-    const newActivity = await Api.createActivity(17, activity, state.token);
+    console.log(state);
+    const newActivity = await Api.createActivity(state.id, activity, state.token);
     setModalVisible(false);
+    setMarker(null);
     loadActivities();
   }
 
@@ -69,52 +67,53 @@ export default function Home({navigation}) {
   }, []);
 
   if (posLoaded){
+    //console.log(userPos);
     return (
       <View style={globalStyles.container}>
         <View style={styles.map}>
-        <MapView
-            style={{ flex: 1 }}
-            provider={PROVIDER_GOOGLE}
-            showsUserLocation={true}
-            initialRegion={{
-              latitude: userPos.location.latitude,
-              longitude: userPos.location.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01}
+          <MapView
+              style={{ flex: 1 }}
+              provider={PROVIDER_GOOGLE}
+              showsUserLocation={true}
+              initialRegion={{
+                latitude: userPos.location.latitude - 0.005,
+                longitude: userPos.location.longitude - 0.0115,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01}
+              }
+              onPress={(e) => {
+                setMarker({
+                  latitude: e.nativeEvent.coordinate.latitude,
+                  longitude: e.nativeEvent.coordinate.longitude, 
+                });
+                //console.log(marker)
+              }
+              }
+          >
+            {
+              marker && 
+              <Marker 
+                coordinate={marker} 
+                title='Create activity'
+              >
+                <Callout onPress={() => setModalVisible(true)}>
+                  <Text>Create activity</Text>
+                </Callout>
+              </Marker>
             }
-            onPress={(e) => {
-              setMarker({
-                latitude: e.nativeEvent.coordinate.latitude,
-                longitude: e.nativeEvent.coordinate.longitude, 
-              });
-              //console.log(marker)
+            {activities.map(activity =>(
+              <Marker
+              key={activity.id}
+              coordinate={activity.location}
+              title={activity.sport}
+              >
+                <Callout onPress={() => pressHandler(activity.id)}>
+                  <Text>{activity.sport}</Text>
+                </Callout>
+              </Marker>
+            ))
             }
-            }
-        >
-          {
-            marker && 
-            <Marker 
-              coordinate={marker} 
-              title='Create activity'
-            >
-              <Callout onPress={() => setModalVisible(true)}>
-                <Text>Create activity</Text>
-              </Callout>
-            </Marker>
-          }
-          {activities.map(activity =>(
-            <Marker
-            key={activity.id}
-            coordinate={activity.location}
-            title={activity.sport}
-            >
-              <Callout onPress={() => pressHandler(activity.id)}>
-                <Text>{activity.sport}</Text>
-              </Callout>
-            </Marker>
-          ))
-          }
-        </MapView>
+          </MapView>
         </View> 
 
         <Modal

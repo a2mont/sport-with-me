@@ -1,7 +1,6 @@
 import React, {useState,useContext} from 'react';
 import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity } from 'react-native';
 import { globalStyles } from '../styles/global.js';
-import Api from '../api/api';
 import {Context as AuthContext} from '../context/authContext';
 
 export default function Login({navigation}){
@@ -15,6 +14,7 @@ export default function Login({navigation}){
                     placeholder='Email' 
                     onChangeText={setEmail}
                     value={email}
+                    keyboardType='email-address'
                 />
                 <TextInput 
                     placeholder='password' 
