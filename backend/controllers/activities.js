@@ -12,15 +12,51 @@ const Activity = require('../models/activity');
  *          properties:
  *              id:
  *                  description: id of the activity
- *                  type: Number
+ *                  type: integer
  *              sport:
  *                  description: sport type of the activity
  *                  type: string
  *              creator:
  *                  description: creator of the activity
  *                  $ref: '#/components/schemas/User'
+ *              location:
+ *                  description: location of the activity
+ *                  type: object
+ *                  properties:
+ *                      latitude:
+ *                          type: number
+ *                          example: 47.1
+ *                      longitude: 
+ *                          type: number
+ *                          example: 7.5
+ *              date:
+ *                  description: day and hour(optional) of the activity
+ *                  type: object
+ *                  properties:
+ *                      day:
+ *                          type: string
+ *                          example: YYYY-MM-DD
+ *                      hour: 
+ *                          type: string
+ *                          example: HH:mm
+ *              price:
+ *                  description: price of the activity
+ *                  type: number
+ *                  example: 5.5
+ *              public:
+ *                  description: the activity is open to the public
+ *                  type: boolean
+ *              comments:
+ *                  description: additional informations
+ *                  type: string
+ *                  example: Please bring a water bottle with you
+ *              participants:
+ *                  description: participants to the activity
+ *                  type: array
+ *                  items:
+ *                      $ref: '#/components/schemas/User'
  *              
- * 
+ *
  *      ActivityPartial:
  *       properties:
  *          sport:
@@ -29,23 +65,42 @@ const Activity = require('../models/activity');
  *           type: object
  *           properties: 
  *             id: 
- *               type: Number
+ *               type: number
  *           required: 
  *             - id
  *          date:
- *               type: Date
- *          time:
- *               type: string
- *          latitude:
- *               type: string
- *          longitude: 
- *               type: string
+ *              type: object
+ *              properties:
+ *                  day:
+ *                      type: string
+ *                      example: YYYY-MM-DD
+ *                  hour: 
+ *                      type: string
+ *                      example: HH:mm
+ *              required:
+ *                  - day
+ *          location:
+ *               type: object
+ *               properties:
+ *                  latitude:
+ *                      type: number
+ *                  longitude: 
+ *                      type: number
+ *          price:
+ *              type: number
+ *          public:
+ *              type: boolean
+ *          comments:
+ *              type: string
+ *          participants:
+ *              type: array
+ *              items:
+ *                  type: integer
  *       required:
  *         - sport
  *         - creator
  *         - date
- *         - latitude
- *         - longitude
+ *         - location
  * 
  *      ActivitiesArray:
  *         type: array
@@ -53,14 +108,17 @@ const Activity = require('../models/activity');
  *           $ref: '#/components/schemas/Activity'
  */
 
- let controller = {
+let controller = {
 
-    getById: async(id, ctx, next) => {
-        try{
-            ctx.activity = await Activity.findById(id).populate('creator').exec();
-            if(!ctx.activity) return ctx.status = 404;
+    getById: async (id, ctx, next) => {
+        try {
+            ctx.activity = await Activity.findById(id)
+            .populate('creator')
+            .populate('participants')
+            .exec();
+            if (!ctx.activity) return ctx.status = 404;
             return next();
-        }catch (err){
+        } catch (err) {
             ctx.status = 404;
         }
     },
@@ -95,21 +153,19 @@ const Activity = require('../models/activity');
      * 
      */
     create: async (ctx) => {
-        try{
+        try {
             const user = await User.findById(ctx.request.body.creator.id);
-            if(!user) return ctx.status = 400;
+            if (!user) return ctx.status = 400;
             let activity = new Activity({
                 sport: ctx.request.body.sport,
                 creator: user._id,
                 date: ctx.request.body.date,
-                time: ctx.request.body.time,
-                location:{
-                    latitude: ctx.request.body.latitude,
-                    longitude: ctx.request.body.longitude,
-                }
+                location: ctx.request.body.location,
+                participants: ctx.request.body.participants,
             });
             activity = await activity.save();
-            await Activity.populate(activity, {path: 'creator'});
+            await Activity.populate(activity, { path: 'creator' });
+            await Activity.populate(activity, { path: 'participants' });
             ctx.body = activity.toClient();
             ctx.status = 201;
         } catch (err) {
@@ -123,9 +179,15 @@ const Activity = require('../models/activity');
      * 
      * /activities/:
      *   get:
-     *     summary: list all activities
+     *     summary: List all activities
      *     tags: 
      *       - activities
+     *     parameters:
+     *       - name: owner_id
+     *         in: query
+     *         description: the id of the owner (optional)
+     *         schema: 
+     *           type: string
      *     responses:
      *       '200':
      *         description: success
@@ -134,14 +196,14 @@ const Activity = require('../models/activity');
      *             schema:
      *              $ref: '#/components/schemas/ActivitiesArray'
      * 
-     * /users/{id}/activities/:
+     * /users/{user_id}/activities/:
      *   get:
-     *     summary: list all activities owned by a given user
+     *     summary: List all activities owned by a given user
      *     operationId: listUserActivities
      *     tags: 
      *       - activities
      *     parameters:
-     *       - name: id
+     *       - name: user_id
      *         in: path
      *         required: true
      *         description: the id of the owner
@@ -162,19 +224,23 @@ const Activity = require('../models/activity');
 
     list: async (ctx) => {
         const req = {};
+        //console.log(ctx.query.owner_id);
         if (ctx.query.owner_id) {
-            try{
+            try {
                 const user = await User.findById(ctx.query.owner_id).exec();
-                console.log(user);
-                req.owner = user._id;
+                //console.log(user);
+                req.creator = user._id;
             } catch (err) {
                 console.log(err);
-                req.owner = null;
+                req.creator = null;
             }
         }
-        if (ctx.user) req.owner = ctx.user._id;
-        const activities = await Activity.find(req).populate('creator').exec();
-        for(let i = 0; i < activities.length; i++) {
+        if (ctx.user) req.creator = ctx.user._id;
+        let activities = await Activity.find(req)
+            .populate('creator')
+            .populate('participants')
+            .exec();
+        for (let i = 0; i < activities.length; i++) {
             activities[i] = activities[i].toClient();
         }
         ctx.body = activities;
@@ -230,7 +296,7 @@ const Activity = require('../models/activity');
      *              description: Activity not found
      * 
      */
-    read: async(ctx) => {
+    read: async (ctx) => {
         ctx.body = ctx.activity.toClient();
     },
 
@@ -278,7 +344,12 @@ const Activity = require('../models/activity');
         activity.date = ctx.request.body.date;
         activity.sport = ctx.request.body.sport;
         activity.creator = ctx.request.body.creator.id;
+        activity.location = ctx.request.body.location;
         await activity.save();
+        await activity
+            .populate('creator')
+            .populate('participants')
+            .execPopulate();
         ctx.body = activity.toClient();
     },
 
@@ -314,5 +385,5 @@ const Activity = require('../models/activity');
         await Activity.findByIdAndDelete(ctx.activity._id).exec();
         ctx.status = 204;
     },
- }
- module.exports = controller;
+}
+module.exports = controller;

@@ -24,6 +24,10 @@ const userSchema = new Mongoose.Schema(
                 //required: true,
             }
         },
+        friends:[{
+            type: Number,
+            ref: 'User'
+        }],
     },
     {timestamps: true}
 );
@@ -33,7 +37,14 @@ userSchema.method('toClient', function(){
 
     // Rename fields
     obj.id = obj._id;
-
+    //Rename fields in participants array
+    for (let i = 0; i < obj.friends.length; i++) {
+        obj.friends[i] = {
+            id: obj.friends[i]._id,
+            email: obj.friends[i].email,
+            name: obj.friends[i].name,
+        }
+    }
     // Delete fields
     delete obj._id;
     delete obj.__v;

@@ -1,57 +1,73 @@
 const Mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-auto-increment');
-const GeoJSON = require('mongoose-geojson-schema');
 
 const activitySchema = new Mongoose.Schema(
     {
-        price:{
+        price: {
             type: Number,
         },
         location: {
-            latitude:{
+            latitude: {
                 type: Number,
+                required: true,
             },
-            longitude:{
+            longitude: {
                 type: Number,
+                required: true,
             }
         },
         sport: {
             type: String,
-            //required: true,
+            required: true,
         },
-        date: {
-            type: Date,
-            //required : true,
-        },
-        time:{
-            type: String,
+        date:{
+            day: {
+                type: Date,
+                required : true,
+            },
+            hour: {
+                type: String,
+            }
         },
         creator: {
             type: Number,
             required: true,
-            ref : 'User',
-        },
-        outdoor: {
-            type: Boolean,
+            ref: 'User',
         },
         public: {
-            type: Boolean
+            type: Boolean,
+        },
+        participants: [{
+            type: Number,
+            ref: 'User'
+        }],
+        comments:{
+            type: String,
         },
     },
-    {timestamps: true}
+    { timestamps: true }
 );
 
-activitySchema.method('toClient', function(){
+activitySchema.method('toClient', function () {
     var obj = this.toObject();
 
     // Rename fields
     obj.id = obj._id;
-    obj.creator = {         // --------- Problème ici -----------
+    obj.creator = {
         id: obj.creator._id,
         email: obj.creator.email,
+        name: obj.creator.name,
     };
-    // ------- Question ----------- How to Rename participants
 
+    //Rename fields in participants array
+    for (let i = 0; i < obj.participants.length; i++) {
+        obj.participants[i] = {
+            id: obj.participants[i]._id,
+            email: obj.participants[i].email,
+            name: obj.participants[i].name,
+        }
+    }
+    
     // Delete fields
     delete obj._id;
     delete obj.__v;

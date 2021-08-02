@@ -11,13 +11,23 @@ const Bcrypt = require('bcrypt');
  *          type: object    
  *          properties:
  *              id:
- *                  type: Number
- *              firstname:
- *                  type: string
- *              lastname:
- *                  type: string
+ *                 type: number
+ *              name:
+ *                  type: object
+ *                  properties:
+ *                      firstname:
+ *                          type: string
+ *                          example: Firstname
+ *                      lastname:
+ *                          type: string
+ *                          example: Lastname
  *              email:
  *                  type: string
+ *                  example: name@email.com
+ *              friends:
+ *                  type: array
+ *                  items:
+ *                      $ref: '#/components/schemas/User'
  *      UserLogin: 
  *          type: object
  *          properties:
@@ -28,6 +38,25 @@ const Bcrypt = require('bcrypt');
  *          required:
  *              - email
  *              - password
+ * 
+ *      UserNoFriends:
+ *          type: object
+ *          properties:
+ *              email:
+ *                  type: string
+ *              password:
+ *                  type: string
+ *              name:
+ *                  type: object
+ *                  properties:
+ *                      lastname:
+ *                          type: string
+ *                      firstname:
+ *                          type: string
+ *          required:
+ *              - email
+ *              - password
+ *      
  *      UserPartials: 
  *          type: object
  *          properties:
@@ -35,13 +64,21 @@ const Bcrypt = require('bcrypt');
  *                  type: string
  *              password:
  *                  type: string
- *              firstname: 
- *                  type: string
- *              lastname: 
- *                  type: string
+ *              name:
+ *                  type: object
+ *                  properties:
+ *                      lastname:
+ *                          type: string
+ *                      firstname:
+ *                          type: string
+ *              friends:
+ *                  type: array
+ *                  items:
+ *                      type: integer
  *          required:
  *              - email
  *              - password
+ *      
  *      UsersArray:
  *         type: array
  *         items: 
@@ -113,7 +150,7 @@ const Bcrypt = require('bcrypt');
      *       content:
      *         application/json:
      *           schema: 
-     *             $ref: '#/components/schemas/UserPartial'
+     *             $ref: '#/components/schemas/UserPartials'
      *     responses:
      *       '200':
      *         description: success
@@ -133,7 +170,10 @@ const Bcrypt = require('bcrypt');
         const user = ctx.user;
         user.email = ctx.request.body.email;
         user.password = await Bcrypt.hash(ctx.request.body.password, 10);
+        user.friends = ctx.request.body.friends;
+        user.name = ctx.request.body.name;
         await user.save();
+        await user.populate('friends').execPopulate();
         ctx.body = user.toClient();
     },
 
@@ -194,7 +234,9 @@ const Bcrypt = require('bcrypt');
      */
 
     list: async (ctx) => {
-        const users = await User.find({}).exec();
+        const users = await User.find({})
+            .populate('friends')
+            .exec();
         for(let i = 0; i < users.length; i++) {
             users[i] = users[i].toClient();
         }

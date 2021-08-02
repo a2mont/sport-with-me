@@ -92,7 +92,7 @@ let controller = {
  *       content:
  *         application/json:
  *           schema: 
- *             $ref: '#/components/schemas/UserPartials'
+ *             $ref: '#/components/schemas/UserNoFriends'
  *     responses:
  *       '201':
  *         description: Created
@@ -116,10 +116,8 @@ let controller = {
         const user = new User({
             email: ctx.request.body.email,
             password,
-            name: {
-                firstname: ctx.request.body.firstname,
-                lastname: ctx.request.body.lastname
-            }
+            name: ctx.request.body.name,
+            friends: [],
         });
         const ret = await user.save();
         ctx.body = ret.toClient();
