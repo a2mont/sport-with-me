@@ -124,7 +124,9 @@ const Bcrypt = require('bcrypt');
      * 
      */
     read: async(ctx) => {
-        ctx.body = ctx.user.toClient();
+        const user = ctx.user;
+        await user.populate('friends').execPopulate();
+        ctx.body = user.toClient();
     },
 
     /**

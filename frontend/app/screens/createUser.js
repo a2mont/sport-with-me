@@ -36,12 +36,14 @@ const userSchema = yup.object({
                             onChangeText={props.handleChange('email')}
                             onBlur={props.handleBlur('email')} 
                             value={props.values.email}
+                            keyboardType='email-address'
                         />
                         <TextInput 
                             placeholder='password' 
                             onChangeText={props.handleChange('password')}
                             onBlur={props.handleBlur('password')} 
                             value={props.values.password}
+                            secureTextEntry
                         />
                         <TextInput 
                             placeholder='firstname' 

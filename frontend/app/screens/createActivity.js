@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { StyleSheet, Button, TextInput, View, Text } from 'react-native';
+import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity } from 'react-native';
 import { globalStyles } from '../styles/global.js';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -21,8 +21,11 @@ export default function ActivityForm({addActivity, activityLocation}){
     const date = new Date();
     const [showDate,setShowDate] = useState(false);
     const [showTime,setShowTime] = useState(false);
-    const [dateLabel,setDateLabel] = useState('DATE');
-    const [timeLabel, setTimeLabel] = useState('TIME');
+    const [fullday, setFullday] = useState(false);
+    const [dateLabel,setDateLabel] = useState('');
+    const [timeLabel, setTimeLabel] = useState('');
+    const [price,setPrice] = useState('');
+    const [restricted, setRestricted] = useState(true);
     const [selectedSport, setSelectedSport] = useState('Sport')
 
     const dateChange = (date) => {
@@ -39,11 +42,19 @@ export default function ActivityForm({addActivity, activityLocation}){
         <View style={globalStyles.container}>
             <Formik
                 initialValues={{
-                    sport:'', 
-                    date: moment().format('YYYY-MM-DD'), 
-                    time:'',
-                    latitude: activityLocation.latitude, 
-                    longitude: activityLocation.longitude}}
+                    sport:'',
+                    date:{
+                        day: '',
+                        hour: '',
+                    },
+                    location:{
+                        latitude: activityLocation.latitude, 
+                        longitude: activityLocation.longitude,
+                    },
+                    price: 0.0,
+                    public: true,
+                    comments: "",
+                    }}
                 //validationSchema={activitySchema}
                 onSubmit={(values, action) => {
                     action.resetForm();
@@ -53,14 +64,6 @@ export default function ActivityForm({addActivity, activityLocation}){
                 {props => (
                     <View style={styles.formsView}>
                         <Text style={styles.title}>CREATE AN ACTIVITY</Text>
-                        <View style={styles.form}>
-                            <View style={styles.formline}>
-                                <Text>{dateLabel}</Text>
-                                <TextInput 
-                                    style={globalStyles.input}
-                                    placeholder='Sport' // Pas sur de garder cette forme
-                                />
-                            </View>
                         <SearchableDropdown
                                 onTextChange={props.handleChange('rating')}
                                 //On text change listner on the searchable input
@@ -107,7 +110,46 @@ export default function ActivityForm({addActivity, activityLocation}){
                                 underlineColorAndroid="transparent"
                                 //To remove the underline from the android input
                             />
-                            <Button onPress={()=> setShowDate(true)} title="Choisir la date"/>
+                        <View>
+                            <TouchableOpacity onPress={()=> setShowDate(true)}>
+                                {dateLabel == '' && <Text>DATE</Text>}
+                                {dateLabel != '' && <Text>{dateLabel}</Text>}
+                            </TouchableOpacity>
+                            <Button onPress={() => setFullday(!fullday)} title="Fullday"/>
+                            {!fullday && <TouchableOpacity onPress={()=> setShowTime(true)}>
+                                {timeLabel == '' && <Text>HOUR</Text>}
+                                {timeLabel != '' && <Text>{timeLabel}</Text>}
+                            </TouchableOpacity>}
+                        </View>
+                        <View>
+                            <TextInput
+                                value={price}
+                                onChangeText={(val) => {
+                                    props.values.price = val;
+                                    setPrice(val);
+                                }}
+                                placeholder='Prix' 
+                                keyboardType='numeric'/>
+                        </View>
+                        <Text>Checkbox public/privé + infos sur signification</Text>
+                        <View>
+                                <TouchableOpacity onPress={() => {
+                                    const value = !restricted;
+                                    props.values.public = value;
+                                    setRestricted(value);
+                                    }}>
+                                    <Text>Public ? : {restricted.toString()}</Text>
+                                </TouchableOpacity>
+                        </View>
+                        <View style={styles.form}>
+                            <Text>Commentaires optionnels</Text>
+                            <View style={styles.formline}>
+                                <TextInput 
+                                    style={globalStyles.input}
+                                    placeholder='Commentaires'
+                                    onChangeText={(val) => props.values.comments = val}
+                                />
+                            </View>
                             {showDate && (
                                 <DateTimePicker
                                     testID="dateTimePicker"
@@ -117,14 +159,14 @@ export default function ActivityForm({addActivity, activityLocation}){
                                     display="default"
                                     onChange={(event,val) => {
                                         //var newDate = moment(val).format('YYYY-MM-DD');
-                                        dateChange(moment(val).format('YYYY-MM-DD'));
+                                        const value = moment(val).format('YYYY-MM-DD');
+                                        dateChange(value);
                                         //console.log(moment(val).format('YYYY-MM-DD'))
-                                        props.values.date = moment(val).format('YYYY-MM-DD');
+                                        props.values.date.day = value;
                                         //console.log(props.values.date);
                                     }}
                                 />)
                             }
-                            <Button onPress={()=> setShowTime(true)} title="Choisir l'heure"/>
                             {showTime && (
                                 <DateTimePicker
                                     testID="dateTimePicker"
@@ -134,9 +176,10 @@ export default function ActivityForm({addActivity, activityLocation}){
                                     display="spinner"
                                     onChange={(event,val) => {
                                         //console.log(val);
-                                        props.values.time = moment(val).format('HH:mm');
+                                        const value = moment(val).format('HH:mm');
+                                        timeChange(value);
+                                        props.values.date.hour = value;
                                         //console.log(props.values.time);
-                                        timeChange(props.values.time);
                                     }}
                                 />)
                             }

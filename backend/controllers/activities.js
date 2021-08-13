@@ -18,7 +18,7 @@ const Activity = require('../models/activity');
  *                  type: string
  *              creator:
  *                  description: creator of the activity
- *                  $ref: '#/components/schemas/User'
+ *                  $ref: '#/components/schemas/UserNoFriends'
  *              location:
  *                  description: location of the activity
  *                  type: object
@@ -54,7 +54,7 @@ const Activity = require('../models/activity');
  *                  description: participants to the activity
  *                  type: array
  *                  items:
- *                      $ref: '#/components/schemas/User'
+ *                      $ref: '#/components/schemas/UserNoFriends'
  *              
  *
  *      ActivityPartial:
@@ -162,6 +162,9 @@ let controller = {
                 date: ctx.request.body.date,
                 location: ctx.request.body.location,
                 participants: ctx.request.body.participants,
+                price: ctx.request.body.price,
+                comments: ctx.request.body.comments,
+                public: ctx.request.body.public,
             });
             activity = await activity.save();
             await Activity.populate(activity, { path: 'creator' });
@@ -345,6 +348,7 @@ let controller = {
         activity.sport = ctx.request.body.sport;
         activity.creator = ctx.request.body.creator.id;
         activity.location = ctx.request.body.location;
+        activity.participants = ctx.request.body.participants;
         await activity.save();
         await activity
             .populate('creator')

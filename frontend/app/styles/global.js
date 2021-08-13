@@ -24,5 +24,26 @@ export const globalStyles = StyleSheet.create({
         height:40,
         margin:10,
       },
+      modalView: {
+        flex:1,
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+      },
+      modalIcon:{
+        alignItems: "flex-start",
+      },
+      modalContent:{
+        flex:1,
+      }
 });
 

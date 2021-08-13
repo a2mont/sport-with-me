@@ -29,8 +29,10 @@ const createUser = async (person) => {
         const response = await Client.post('/register', {
             email: person.email,
             password: person.password,
-            firstname: person.firstname,
-            lastname: person.lastname,
+            name:{
+                firstname: person.firstname,
+                lastname: person.lastname,
+            },
         });
         if (response.status == CREATED){
             //console.log(response.data);
@@ -51,22 +53,23 @@ const createUser = async (person) => {
 
 }
 
-
 const createActivity = async (user, activity, jwt) => {
     try {
         const bearer = "Bearer "+ jwt;
         const id = parseInt(user);
         const newActivity = {
             sport: activity.sport.name,
-                creator: {
-                    id: id
-                },
-                date: activity.date,
-                time: activity.time,
-                latitude: activity.latitude,
-                longitude: activity.longitude,
+            creator: {
+                id: id
+            },
+            date: activity.date,
+            location: activity.location,
+            price: parseFloat(activity.price),
+            public: activity.public,
+            comments: activity.comments,
+            participants: [id],
         };
-        console.log(newActivity);
+        //console.log(newActivity);
         const response = await Client.post('/activities/', newActivity, 
             {
                 headers: {
@@ -86,6 +89,35 @@ const createActivity = async (user, activity, jwt) => {
         }
     } catch (error) {
         console.log('Error while creating activity');
+        console.log(error);
+        return null;
+    }
+}
+
+const updateActivity = async (activityId, newActivity, jwt) => {
+    try {
+        const bearer = "Bearer "+ jwt;
+        const id = parseInt(activityId);
+        const address = '/activities/'+ id;
+        const response = await Client.put(address, newActivity, 
+            {
+                headers: {
+                    Authorization: bearer,
+                },
+            }
+        );
+        if (response.status == SUCCESS){
+            console.log('Updated: \n' + response.data);
+            return response.data;
+        }else if (response.status == INVALID_REQUEST){
+            console.log('Invalid request')
+            return null;
+        }else{
+            console.log('Could not update activity, error status :' + response.status);
+            return null;
+        }
+    } catch (error) {
+        console.log('Error while updating activity');
         console.log(error);
         return null;
     }
@@ -135,4 +167,5 @@ export default {
     login,
     createActivity,
     getUserInfos,
+    updateActivity,
 }
