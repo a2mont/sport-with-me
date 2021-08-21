@@ -107,7 +107,7 @@ const updateActivity = async (activityId, newActivity, jwt) => {
             }
         );
         if (response.status == SUCCESS){
-            console.log('Updated: \n' + response.data);
+            //console.log('Updated: \n' + response.data);
             return response.data;
         }else if (response.status == INVALID_REQUEST){
             console.log('Invalid request')
@@ -161,6 +161,24 @@ const getUserInfos = async (id) => {
         return null;
     }
 }
+
+const getUserActivities = async (id) => {
+    try {
+        const address = '/users/' + id + '/activities/';
+        const response = await Client.get(address);
+        if (response.status == SUCCESS){
+            //console.log(response.data);
+            return response.data;
+        } else {
+            console.log('User not found');
+            return null;
+        }
+    } catch (error) {
+        console.log('Error while getting user activities');
+        console.log(error);
+        return null;
+    }
+}
 export default {
     getAllActivities,
     createUser,
@@ -168,4 +186,5 @@ export default {
     createActivity,
     getUserInfos,
     updateActivity,
+    getUserActivities,
 }

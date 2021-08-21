@@ -1,33 +1,31 @@
 
-import React,{useState, useEffect} from 'react';
+import React,{useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
 import {globalStyles} from '../styles/global';
 import ActivityItem from '../components/activityItem';
 import FloatingButton from '../components/floatButton';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Api from '../api/api';
+import {Context as AuthContext} from '../context/authContext';
 
 export default function Activities({navigation}) {
-  const [activities,setActivities] = useState([
-    //{sport: 'basketball', date: '2021-06-14', key:'1'},
-    //{sport: 'football', date: '2021-05-12', key:'2'},
-    //{sport: 'tennis', date: '2021-08-03', key:'3'},
-    //{sport: 'bilboquet', date: '2021-14-10', key:'4'},
-  ]);
-
+  const [activities,setActivities] = useState([]);
   const [refreshing, setRefereshing] = useState(false);
-
   const [direction, setDirection] = useState(null);
 
+  const {state,dispatch} = useContext(AuthContext);
+
   const loadActivities = async () => {
-    const allActivities = await Api.getAllActivities();
+    const allActivities = await Api.getUserActivities(state.id);
     setActivities(allActivities);
-    //console.log(activities[0].sport);
   }
 
   useEffect(() => {
-    loadActivities()
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadActivities();
+    });
+    return unsubscribe;
+  },[navigation]);
 
   const pressHandler = (key) => {
     const activity = activities.filter(activity => activity.id == key);

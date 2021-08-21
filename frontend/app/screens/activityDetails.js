@@ -12,13 +12,13 @@ export default function ActivityDetails({navigation, route}) {
   const {activity} = route.params;
   const [showParticipants, setShowParticipants] = useState(false);
   const {state,dispatch} = useContext(AuthContext);
-  console.log(activity.participants);
+  //console.log(activity.participants);
 
 
   const Register = () => {
     let newActivity = {...activity};
+    newActivity.participants = [];
     for(var i = 0; i < activity.participants.length; i++){
-      console.log(activity.participants[i]);
       if(activity.participants[i].id == state.id){
         console.log('Already registered');
         return;
@@ -26,7 +26,7 @@ export default function ActivityDetails({navigation, route}) {
         newActivity.participants = [...newActivity.participants, activity.participants[i].id];
       }
     }
-    newActivity.participants = [...newActivity.participants, state.id];
+    newActivity.participants = [...newActivity.participants, parseInt(state.id)];
     console.log(newActivity);
     Api.updateActivity(activity.id, newActivity, state.token);
   }
@@ -114,7 +114,7 @@ export default function ActivityDetails({navigation, route}) {
               <View style={{paddingBottom:50}}>
                 <FlatList 
                   data={activity.participants}
-                  keyExtractor={(item, index) => item.id}
+                  keyExtractor={(item, index) => item.id.toString()}
                   renderItem={({item}) => 
 
                     item.id == activity.creator.id ?

@@ -21,6 +21,7 @@ export default function Home({navigation}) {
   const [activities,setActivities] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [marker, setMarker] = useState(null);
+  
   const {state,dispatch} = useContext(AuthContext);
 
   const getCurrentLocation = () => {
@@ -63,8 +64,11 @@ export default function Home({navigation}) {
   }
 
   useEffect(() => {
-    loadActivities()
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadActivities();
+    });
+    return unsubscribe;
+  },[navigation]);
 
   if (posLoaded){
     //console.log(userPos);

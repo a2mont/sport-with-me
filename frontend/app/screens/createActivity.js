@@ -18,7 +18,7 @@ export default function ActivityForm({addActivity, activityLocation}){
         latitude: yup.number().required(),
         longitude: yup.number().required(),
     });
-    const date = new Date();
+    const [date, setDate] = useState(new Date());
     const [showDate,setShowDate] = useState(false);
     const [showTime,setShowTime] = useState(false);
     const [fullday, setFullday] = useState(false);
@@ -152,7 +152,6 @@ export default function ActivityForm({addActivity, activityLocation}){
                             </View>
                             {showDate && (
                                 <DateTimePicker
-                                    testID="dateTimePicker"
                                     value={date}
                                     mode='date'
                                     is24Hour={true}
@@ -161,6 +160,7 @@ export default function ActivityForm({addActivity, activityLocation}){
                                         //var newDate = moment(val).format('YYYY-MM-DD');
                                         const value = moment(val).format('YYYY-MM-DD');
                                         dateChange(value);
+                                        setDate(val);
                                         //console.log(moment(val).format('YYYY-MM-DD'))
                                         props.values.date.day = value;
                                         //console.log(props.values.date);
@@ -169,7 +169,6 @@ export default function ActivityForm({addActivity, activityLocation}){
                             }
                             {showTime && (
                                 <DateTimePicker
-                                    testID="dateTimePicker"
                                     value={date}
                                     mode='time'
                                     is24Hour={true}
@@ -178,6 +177,7 @@ export default function ActivityForm({addActivity, activityLocation}){
                                         //console.log(val);
                                         const value = moment(val).format('HH:mm');
                                         timeChange(value);
+                                        setDate(val);
                                         props.values.date.hour = value;
                                         //console.log(props.values.time);
                                     }}
