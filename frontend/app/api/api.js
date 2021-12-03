@@ -2,6 +2,7 @@ import Client from './client';
 //#region Status Codes
 const SUCCESS = 200;
 const CREATED = 201;
+const DELETED = 204;
 const INVALID_REQUEST = 400;
 const NOT_FOUND = 404;
 const NOT_UNIQUE = 409; 
@@ -179,6 +180,30 @@ const getUserActivities = async (id) => {
         return null;
     }
 }
+
+const deleteActivity = async (id, jwt) => {
+    try {
+        const bearer = "Bearer "+ jwt;
+        const address = '/activities/'+id;
+        const response = await Client.delete(address,
+            {
+                headers: {
+                    Authorization: bearer,
+                },
+            });
+        if (response.status == DELETED){
+            //console.log(response.data);
+            return response.data;
+        } else {
+            console.log('Activity not found');
+            return null;
+        }
+    } catch (error) {
+        console.log('Error while getting activity');
+        console.log(error);
+        return null;
+    } 
+}
 export default {
     getAllActivities,
     createUser,
@@ -187,4 +212,5 @@ export default {
     getUserInfos,
     updateActivity,
     getUserActivities,
+    deleteActivity,
 }

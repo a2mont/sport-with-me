@@ -1,9 +1,8 @@
 
 import React,{useState, useEffect, useContext} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Button} from 'react-native';
 import {globalStyles} from '../styles/global';
 import ActivityItem from '../components/activityItem';
-import FloatingButton from '../components/floatButton';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Api from '../api/api';
 import {Context as AuthContext} from '../context/authContext';
@@ -12,11 +11,16 @@ export default function Activities({navigation}) {
   const [activities,setActivities] = useState([]);
   const [refreshing, setRefereshing] = useState(false);
   const [direction, setDirection] = useState(null);
+  const [showAll, setShowAll] = useState(false);
 
   const {state,dispatch} = useContext(AuthContext);
 
   const loadActivities = async () => {
-    const allActivities = await Api.getUserActivities(state.id);
+    let allActivities;
+    if(!showAll)
+      allActivities = await Api.getUserActivities(state.id);
+    else
+      allActivities = await Api.getAllActivities();
     setActivities(allActivities);
   }
 
@@ -62,10 +66,10 @@ export default function Activities({navigation}) {
           current.sort((a,b) => { return compareItems(b.sport,a.sport) });
           break;
         case 'ntoo':
-          current.sort((a,b) => { return compareItems(a.date,b.date) });
+          current.sort((a,b) => { return compareItems(a.date.day,b.date.day) });
           break;
         case 'oton':
-          current.sort((a,b) => { return compareItems(b.date,a.date) });
+          current.sort((a,b) => { return compareItems(b.date.day,a.date.day) });
           break;
       }
       return current;
@@ -108,6 +112,7 @@ export default function Activities({navigation}) {
             onRefresh={refreshHandler}
           />
         </View>
+        <Button onPress={() => {setShowAll(!showAll); loadActivities();}} title='test'/>
     </View>
   );
 }

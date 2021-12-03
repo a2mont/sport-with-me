@@ -4,8 +4,8 @@ import AppLoading from 'expo-app-loading';
 import { StyleSheet, Text, View, TouchableOpacity, Modal} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import {globalStyles} from '../styles/global';
-import FloatingButton from '../components/floatButton';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import Api from '../api/api';
 import CreateActivity from './createActivity';
 import {Context as AuthContext} from '../context/authContext';
@@ -72,8 +72,23 @@ export default function Home({navigation}) {
 
   if (posLoaded){
     //console.log(userPos);
+    const data = require('../app.json');
+    const apiKey = data.expo.android.config.googleMaps.apiKey;
     return (
       <View style={globalStyles.container}>
+        {/*<View style={{flex:0.1}}>
+          <GooglePlacesAutocomplete
+            placeholder='Chercher un lieu'
+            onPress={(data, details = null) => {
+              // 'details' is provided when fetchDetails = true
+              console.log(data, details);
+            }}
+            query={{
+              key:'AIzaSyBXg7DRZ0mM1lI2N4zi-h8KRSQYmvpri04',
+              language:'fr',
+              }}
+            />
+            </View>*/}
         <View style={styles.map}>
           <MapView
               style={{ flex: 1 }}
@@ -176,7 +191,6 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   modalContent:{
-    backgroundColor:'gray',
     flex:1,
   }
 });

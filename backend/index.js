@@ -7,6 +7,7 @@ const Swagger = require('./middlewares/swagger');
 const SwaggerUi = require('koa2-swagger-ui');
 const Routes = require('./routes');
 const Cors = require('@koa/cors');
+require('dotenv').config();
 
 // Options to use with mongoose (mainly to avoid deprecacy warnings)
 const mongooseOptions = {
@@ -16,7 +17,7 @@ const mongooseOptions = {
     useFindAndModify: false,
 };
 // Connect to the MongoDB database
-Mongoose.connect('mongodb://localhost:27017/sport-with-me', mongooseOptions);
+Mongoose.connect(`mongodb://localhost:${process.env.MONGO_PORT}/sport-with-me`, mongooseOptions);
 // Use auto increment for models
 AutoIncrement.initialize(Mongoose.connection);
 

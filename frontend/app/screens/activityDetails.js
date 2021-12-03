@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { StyleSheet, Text, View, Button, SafeAreaView, ScrollView, TouchableOpacity, Modal, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Button, SafeAreaView, ScrollView, TouchableOpacity, Modal, FlatList, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import {globalStyles} from '../styles/global';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
@@ -15,7 +15,7 @@ export default function ActivityDetails({navigation, route}) {
   //console.log(activity.participants);
 
 
-  const Register = () => {
+  const register = () => {
     let newActivity = {...activity};
     newActivity.participants = [];
     for(var i = 0; i < activity.participants.length; i++){
@@ -31,9 +31,37 @@ export default function ActivityDetails({navigation, route}) {
     Api.updateActivity(activity.id, newActivity, state.token);
   }
 
+  const deleteActivity = async () => {
+    await Api.deleteActivity(activity.id, state.token);
+    navigation.goBack();
+  }
 
+  const createDeleteAlert = () => 
+    Alert.alert(
+      'Titre',
+      'Message',
+      [
+        {
+          text: 'Annuler',
+          style:'cancel',
+        },
+        {
+          text:'Supprimer',
+          onPress: () => deleteActivity(),
+        }
+      ]
+    );
   return (
     <SafeAreaView style={{flex:1}}>
+      {state.id == activity.creator.id &&
+      <TouchableOpacity>
+        <MaterialIcons 
+                name='close'
+                size={24}
+                onPress={createDeleteAlert}
+              />
+      </TouchableOpacity>
+      }
       <ScrollView style={globalStyles.container}>
         <View style={styles.activityTitle}>
           <Text style={styles.titleText}>{activity.sport}</Text>
@@ -54,25 +82,6 @@ export default function ActivityDetails({navigation, route}) {
             </View>)
           }
         </View>
-        {
-        <View style={styles.activityMap}>
-          <MapView
-            style={StyleSheet.absoluteFillObject}
-            provider={PROVIDER_GOOGLE}
-            showsUserLocation={false}
-            scrollEnabled={false}
-            initialRegion={{
-              latitude: activity.location.latitude,
-              longitude: activity.location.longitude,
-              latitudeDelta:  0.01,
-              longitudeDelta: 0.01}
-            }
-            onPress={(e) => {}}
-          >
-            <Marker key={0} coordinate={activity.location}></Marker>
-          </MapView>
-        </View>
-        }
         <View style={styles.activityDetails}>
           <View style={styles.activityItem}>
             <Text style={styles.itemText}>Participants</Text>
@@ -93,9 +102,26 @@ export default function ActivityDetails({navigation, route}) {
               <Text style={styles.itemText}>{activity.comments}</Text></View>
           </View>}
         </View>
+        <View style={styles.activityMap}>
+          <MapView
+            style={StyleSheet.absoluteFillObject}
+            provider={PROVIDER_GOOGLE}
+            showsUserLocation={false}
+            scrollEnabled={false}
+            initialRegion={{
+              latitude: activity.location.latitude,
+              longitude: activity.location.longitude,
+              latitudeDelta:  0.01,
+              longitudeDelta: 0.01}
+            }
+            onPress={(e) => {}}
+          >
+            <Marker key={0} coordinate={activity.location}></Marker>
+          </MapView>
+        </View>
       </ScrollView>
       <View>
-          <Button title='Inscription' onPress={Register}/>
+          <Button title='Inscription' onPress={register}/>
         </View>
       <Modal
           animationType="slide"
