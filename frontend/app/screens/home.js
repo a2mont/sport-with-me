@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect, useContext } from 'react';
 import AppLoading from 'expo-app-loading';
-import { StyleSheet, Text, View, TouchableOpacity, Modal} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Modal, Alert} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import {globalStyles} from '../styles/global';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import * as Location from 'expo-location';
 import Api from '../api/api';
 import CreateActivity from './createActivity';
 import {Context as AuthContext} from '../context/authContext';
@@ -24,10 +25,14 @@ export default function Home({navigation}) {
   
   const {state,dispatch} = useContext(AuthContext);
 
-  const getCurrentLocation = () => {
-    return new Promise((resolve,reject) => {
-      navigator.geolocation.getCurrentPosition(position => resolve(position), e => reject(e));
-    });
+  const getCurrentLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+
+      return await Location.getCurrentPositionAsync({});
   }
 
   const pressHandler = (id) => {
@@ -56,11 +61,16 @@ export default function Home({navigation}) {
   }
 
   const addActivity = async (activity) => {
-    console.log(state);
-    const newActivity = await Api.createActivity(state.id, activity, state.token);
-    setModalVisible(false);
-    setMarker(null);
-    loadActivities();
+    //console.log(state);
+    await Api.createActivity(state.id, activity, state.token).then(status => {
+      if(status == 201){
+        setModalVisible(false);
+        setMarker(null);
+        loadActivities();
+      }else{
+        throw new Error('Could not create activity');
+      }
+    });
   }
 
   useEffect(() => {

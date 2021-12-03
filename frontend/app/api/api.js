@@ -37,18 +37,17 @@ const createUser = async (person) => {
         });
         if (response.status == CREATED){
             //console.log(response.data);
-            return response.data;
+           
         }else if (response.status == NOT_UNIQUE){
             console.log('User already exist')
-            return null;
         }else{
             console.log('Could not create user, error status :' + response.status);
-            return null;
         }
+        return response.status;
     }catch(error){
         console.log('Error while creating user');
-        console.log(error);
-        return null;
+        //console.log(error);
+        return error.response.status;
 
     }
 
@@ -80,18 +79,17 @@ const createActivity = async (user, activity, jwt) => {
         );
         if (response.status == CREATED){
             //console.log('Created: \n' + response.data);
-            return response.data;
         }else if (response.status == INVALID_REQUEST){
             console.log('Invalid request')
-            return null;
         }else{
             console.log('Could not create activity, error status :' + response.status);
-            return null;
         }
+        
+        return response.status;
     } catch (error) {
         console.log('Error while creating activity');
-        console.log(error);
-        return null;
+        //console.log(error);
+        return error.response.status;
     }
 }
 
@@ -109,18 +107,16 @@ const updateActivity = async (activityId, newActivity, jwt) => {
         );
         if (response.status == SUCCESS){
             //console.log('Updated: \n' + response.data);
-            return response.data;
         }else if (response.status == INVALID_REQUEST){
-            console.log('Invalid request')
-            return null;
+            console.log('Invalid request');
         }else{
             console.log('Could not update activity, error status :' + response.status);
-            return null;
         }
+        return response.status;
     } catch (error) {
         console.log('Error while updating activity');
         console.log(error);
-        return null;
+        return error.response.status;
     }
 }
 
@@ -133,15 +129,14 @@ const login = async (person) => {
         });
         if(response.status == SUCCESS){
             //console.log(response.data);
-            return response.data;
+            return response.status;
         }else if (response.status == NOT_FOUND){
             console.log('Could not register user, error status :' + response.status);
-            return null;
         }
     } catch (error) {
         console.log('Error while registering');
         console.log(error);
-        return null;
+        return error.response.status;
     }
 } 
 
@@ -193,15 +188,14 @@ const deleteActivity = async (id, jwt) => {
             });
         if (response.status == DELETED){
             //console.log(response.data);
-            return response.data;
         } else {
             console.log('Activity not found');
-            return null;
         }
+        return response.status;
     } catch (error) {
         console.log('Error while getting activity');
         console.log(error);
-        return null;
+        return error.response.status;
     } 
 }
 export default {

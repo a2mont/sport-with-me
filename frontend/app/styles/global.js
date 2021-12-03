@@ -44,6 +44,13 @@ export const globalStyles = StyleSheet.create({
       },
       modalContent:{
         flex:1,
-      }
+      },
+      errorText:{
+        color: 'crimson',
+        fontWeight: 'bold',
+        marginBottom: 10,
+        marginTop: 6,
+        textAlign: 'center',
+      },
 });
 

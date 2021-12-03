@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { globalStyles } from '../styles/global.js';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -7,17 +7,27 @@ import SearchableDropdown from 'react-native-searchable-dropdown';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 
+/*
+const activitySchema = yup.object({
+    
+    sport: yup.string().required(),
+    date: yup.object().shape({
+        date: yup.date().min(new Date()).required(),
+        hour: yup.date().required(),
+    }),
+    location: yup.object().shape({
+        latitude: yup.string().required(),
+        longitude: yup.string().required(),
+    }),
+    price: yup.number(),
+    public: yup.boolean(),
+    comments: yup.string(),
 
+  });
+*/
 export default function ActivityForm({addActivity, activityLocation}){
     const sportsData = require('../assets/sports.json');
     const sportsList = sportsData.sports;
-    const activitySchema = yup.object({
-        sport: yup.string().required(),
-        date: yup.date().required(),
-        time: yup.date(),
-        latitude: yup.number().required(),
-        longitude: yup.number().required(),
-    });
     const [date, setDate] = useState(new Date());
     const [showDate,setShowDate] = useState(false);
     const [showTime,setShowTime] = useState(false);
@@ -25,12 +35,15 @@ export default function ActivityForm({addActivity, activityLocation}){
     const [dateLabel,setDateLabel] = useState('');
     const [timeLabel, setTimeLabel] = useState('');
     const [price,setPrice] = useState('');
-    const [restricted, setRestricted] = useState(true);
+    const [correct, setCorrect] = useState(true);
     const [selectedSport, setSelectedSport] = useState('Sport')
 
     const dateChange = (date) => {
         setShowDate(false);
-        setDateLabel(date);
+        if(date >= new Date())
+            setDateLabel(date);
+        else
+            Alert.alert('Date erronée','Le jour est déjà passé');
     }
     const timeChange = (time) => {
         setShowTime(false);
@@ -55,10 +68,16 @@ export default function ActivityForm({addActivity, activityLocation}){
                     public: true,
                     comments: "",
                     }}
-                //validationSchema={activitySchema}
                 onSubmit={(values, action) => {
-                    action.resetForm();
-                    addActivity(values);
+                    
+                    try{ 
+                        addActivity(values).then(() => {
+                            action.resetForm();
+                            setCorrect(true);
+                        }).catch(() => setCorrect(false))
+                    }catch (err){
+                        
+                    }
                 }}
             >
                 {props => (
@@ -131,7 +150,7 @@ export default function ActivityForm({addActivity, activityLocation}){
                                 placeholder='Prix' 
                                 keyboardType='numeric'/>
                         </View>
-                        <Text>Checkbox public/privé + infos sur signification</Text>
+                        {/*<Text>Checkbox public/privé + infos sur signification</Text>
                         <View>
                                 <TouchableOpacity onPress={() => {
                                     const value = !restricted;
@@ -140,7 +159,7 @@ export default function ActivityForm({addActivity, activityLocation}){
                                     }}>
                                     <Text>Public ? : {restricted.toString()}</Text>
                                 </TouchableOpacity>
-                        </View>
+                                </View>*/}
                         <View style={styles.form}>
                             <Text>Commentaires optionnels</Text>
                             <View style={styles.formline}>
@@ -184,6 +203,7 @@ export default function ActivityForm({addActivity, activityLocation}){
                                 />)
                             }
                         </View>
+                        {!correct && <Text style={globalStyles.errorText}>L'activité n'est pas correctment remplie</Text>}
                         <Button onPress={() => {props.handleSubmit();}} title='Submit'/>
                     </View>
                 )}

@@ -20,15 +20,9 @@ const authReducer = (state, action) => {
 const signup = dispatch => {
   return async (values) => {
     console.log('Signup');
-    const newPerson = await Api.createUser(values)
-      //.then(response => {
-      //console.log(response);
-      /* const email = values.email;
-      const password = values.password;
-      signin({email,password}).then(
-        console.log('ar')); */
-    //})
-    ;
+    var status;
+    status = await Api.createUser(values);
+    return status;
   };
 };
 
@@ -46,7 +40,10 @@ const signin = (dispatch) => {
           id: response.id
         },
       });
-    }).catch(error => console.log('error signing in'));
+    }).catch(error => {
+      //console.log('error signing in');
+      return error;
+    });
   };
 };
 
