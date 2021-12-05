@@ -129,7 +129,7 @@ const login = async (person) => {
         });
         if(response.status == SUCCESS){
             //console.log(response.data);
-            return response.status;
+            return response.data;
         }else if (response.status == NOT_FOUND){
             console.log('Could not register user, error status :' + response.status);
         }

@@ -13,8 +13,7 @@ export default function HomeNavigator({navigation}) {
                 name="Home" 
                 component={Home}
                 options={{
-                    headerLeft: () =>
-                    <HeaderIcon navigation={navigation}/>
+                    headerShown:false
                 }}/>
             <Screen 
                 name="Details" 

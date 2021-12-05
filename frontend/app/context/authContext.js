@@ -29,9 +29,7 @@ const signup = dispatch => {
 const signin = (dispatch) => {
   return async ({email, password}) => {
     const token = await Api.login({email,password}).then(response => {
-      //console.log(token);
       console.log('Signin');
-      //console.log(response);
       dispatch({
         type: 'signin',
         payload: {
@@ -41,7 +39,7 @@ const signin = (dispatch) => {
         },
       });
     }).catch(error => {
-      //console.log('error signing in');
+      console.log('error signing in');
       return error;
     });
   };

@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ImageBackground } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function FloatingButton({pressHandler}){
     return(
         <View  style={styles.button}>
-            <MaterialIcons 
-            name='add' 
+            <MaterialCommunityIcons 
+            name='crosshairs-gps' 
             onPress={() => pressHandler()} 
             size={25} 
             style={styles.buttonIcon}/>

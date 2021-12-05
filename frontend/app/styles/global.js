@@ -1,10 +1,16 @@
 import { StyleSheet} from 'react-native';
 
+export const colors = {
+  background: '#424242',
+  selected: 'tomato',
+  inactive: '#f5f5f5',
+  buttonsBackground: '#212121'
+
+}
 export const globalStyles = StyleSheet.create({
     container:{
         flex:1,
-        backgroundColor:'#fff',
-        padding: 20,
+        backgroundColor:'#121212',
     },
     titleText:{
         fontSize:18,

@@ -13,7 +13,7 @@ export default function ActivitiesNavigator({navigation}){
                 name="Activities" 
                 component={Activities}
                 options={{
-                    title:"Activities",
+                    title:"Activités",
                 }} 
             />
             <Screen

@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity, FlatList, Button} from 'react
 import {globalStyles} from '../styles/global';
 import ActivityItem from '../components/activityItem';
 import DropDownPicker from 'react-native-dropdown-picker';
+import SwitchSelector from 'react-native-switch-selector';
 import Api from '../api/api';
 import {Context as AuthContext} from '../context/authContext';
 
@@ -11,13 +12,13 @@ export default function Activities({navigation}) {
   const [activities,setActivities] = useState([]);
   const [refreshing, setRefereshing] = useState(false);
   const [direction, setDirection] = useState(null);
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(0);
 
   const {state,dispatch} = useContext(AuthContext);
 
   const loadActivities = async () => {
     let allActivities;
-    if(!showAll)
+    if(showAll == 0)
       allActivities = await Api.getUserActivities(state.id);
     else
       allActivities = await Api.getAllActivities();
@@ -26,7 +27,7 @@ export default function Activities({navigation}) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      loadActivities();
+      refreshHandler();
     });
     return unsubscribe;
   },[navigation]);
@@ -43,6 +44,10 @@ export default function Activities({navigation}) {
   const refreshHandler = () => {
     setRefereshing(true);
     loadActivities().then(setRefereshing(false));
+  }
+
+  const handleShow = (value) => {
+    setShowAll(value);
   }
 
   const compareItems = (a,b) => {
@@ -78,6 +83,17 @@ export default function Activities({navigation}) {
 
   return (
     <View style={globalStyles.container}>
+      <View>
+        <SwitchSelector 
+          initial={showAll}
+          onPress={value =>  {handleShow(value); refreshHandler();}}
+          value={showAll}
+          options={[
+            {label: 'Mes activités', value: 0},
+            {label: 'Toutes les activités', value: 1}
+          ]}
+        />
+      </View>
         <View style={styles.filterView}>
           <DropDownPicker 
             items={[
@@ -112,7 +128,6 @@ export default function Activities({navigation}) {
             onRefresh={refreshHandler}
           />
         </View>
-        <Button onPress={() => {setShowAll(!showAll); loadActivities();}} title='test'/>
     </View>
   );
 }

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useContext } from 'react';
 import AppLoading from 'expo-app-loading';
-import { StyleSheet, Text, View, TouchableOpacity, Modal, Alert} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Modal, SafeAreaView, useWindowDimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import {globalStyles} from '../styles/global';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
@@ -10,18 +10,25 @@ import * as Location from 'expo-location';
 import Api from '../api/api';
 import CreateActivity from './createActivity';
 import {Context as AuthContext} from '../context/authContext';
+import FloatingButton from '../components/floatButton';
 
 export default function Home({navigation}) {
+  var delta = 0.01;
   const [userPos, setUserPos] = useState({
-    location:{
-      latitude:46.8,
-      longitude:7.17,
-    }
+    latitude:46.8,
+    longitude:7.17,
   });
   const [posLoaded,setPosLoaded] = useState(false);
   const [activities,setActivities] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [marker, setMarker] = useState(null);
+  const [region, setRegion] = useState({
+    latitude:46.8,
+    longitude:7.17,
+    latitudeDelta: delta,
+    longitudeDelta: delta
+  });
+
   
   const {state,dispatch} = useContext(AuthContext);
 
@@ -45,10 +52,10 @@ export default function Home({navigation}) {
       //console.log(position)
       if(position){
         setUserPos({
-          location:{
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          }
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          latitudeDelta: delta,
+          longitudeDelta: delta
         })
       }
     });
@@ -83,49 +90,44 @@ export default function Home({navigation}) {
   if (posLoaded){
     //console.log(userPos);
     const data = require('../app.json');
-    const apiKey = data.expo.android.config.googleMaps.apiKey;
     return (
       <View style={globalStyles.container}>
-        {/*<View style={{flex:0.1}}>
-          <GooglePlacesAutocomplete
-            placeholder='Chercher un lieu'
-            onPress={(data, details = null) => {
-              // 'details' is provided when fetchDetails = true
-              console.log(data, details);
-            }}
-            query={{
-              key:'AIzaSyBXg7DRZ0mM1lI2N4zi-h8KRSQYmvpri04',
-              language:'fr',
-              }}
-            />
-            </View>*/}
-        <View style={styles.map}>
-          <MapView
-              style={{ flex: 1 }}
-              provider={PROVIDER_GOOGLE}
-              showsUserLocation={true}
-              initialRegion={{
-                latitude: userPos.location.latitude - 0.005,
-                longitude: userPos.location.longitude - 0.0115,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01}
-              }
-              onPress={(e) => {
-                setMarker({
-                  latitude: e.nativeEvent.coordinate.latitude,
-                  longitude: e.nativeEvent.coordinate.longitude, 
-                });
-                //console.log(marker)
-              }
-              }
-          >
+            <View style={styles.map}>
+              <MapView
+                  style={{ flex: 1 }}
+                  provider={PROVIDER_GOOGLE}
+                  showsUserLocation={true}
+                  initialRegion={{
+                    latitude: userPos.latitude,
+                    longitude: userPos.longitude,
+                    latitudeDelta: delta,
+                    longitudeDelta: delta
+                  }}
+                  region={region}
+                  onPress={(e) => {
+                    setMarker({
+                      latitude: e.nativeEvent.coordinate.latitude,
+                      longitude: e.nativeEvent.coordinate.longitude, 
+                    });
+                    //console.log(marker)
+                  }
+                  }
+              >
             {
               marker && 
               <Marker 
                 coordinate={marker} 
                 title='Create activity'
               >
-                <Callout onPress={() => setModalVisible(true)}>
+                <Callout onPress={(e) => {
+                  setModalVisible(true);
+                  setRegion({
+                    latitude: e.nativeEvent.coordinate.latitude,
+                    longitude: e.nativeEvent.coordinate.longitude, 
+                    latitudeDelta: delta,
+                    longitudeDelta: delta
+                  });
+                  }}>
                   <Text>Create activity</Text>
                 </Callout>
               </Marker>
@@ -143,8 +145,36 @@ export default function Home({navigation}) {
             ))
             }
           </MapView>
-        </View> 
 
+        </View> 
+        {<SafeAreaView  style={{flex:1, position:'absolute', top:'5%', left: '5%', width:'90%'}}>
+              <GooglePlacesAutocomplete
+                placeholder='Chercher un lieu'
+                fetchDetails={true}
+                GooglePlacesSearchQuery={{rankby:'distance'}}
+                onPress={(data, details = null) => {
+                  // 'details' is provided when fetchDetails = true
+                  setRegion({
+                    latitude: details.geometry.location.lat,
+                    longitude: details.geometry.location.lng,
+                    latitudeDelta: delta,
+                    longitudeDelta: delta
+                  });
+                }}
+                query={{
+                  key:process.env.PLACES_API,
+                  language:'fr',
+                  radius: 30000,
+                  location: `${region.latitude}, ${region.longitude}`
+                  }}
+                />
+            </SafeAreaView >}
+        <FloatingButton pressHandler={() => setRegion({
+          latitude: userPos.latitude,
+          longitude: userPos.longitude,
+          latitudeDelta: delta,
+          longitudeDelta: delta
+        })}/>
         <Modal
           animationType="slide"
           transparent={true}

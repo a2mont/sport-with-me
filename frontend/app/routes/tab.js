@@ -4,6 +4,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import DrawerNavigator from './drawer';
 import ActivitiesNavigator from './activityStack';
 import UserProfile from '../screens/userProfile';
+import HomeNavigator from "./homeStack";
+import { globalStyles, colors } from "../styles/global";
 
 const {Navigator, Screen} = createBottomTabNavigator();
 
@@ -34,17 +36,20 @@ export default function BottomTabNavigator(){
                 },
           })}
           tabBarOptions={{
-            activeTintColor: 'tomato',
-            inactiveTintColor: 'gray',
+            activeTintColor: colors.selected,
+            inactiveTintColor: colors.inactive,
             showLabel:false,
             style:{
-                backgroundColor: 'black',
+                backgroundColor: colors.buttonsBackground,
             }
           }}
         >
             
             <Screen name='Activities' component={ActivitiesNavigator} />
-            <Screen name='Home' component={DrawerNavigator} />
+            {/*<Screen name='Home' component={DrawerNavigator} />*/}
+            <Screen name='Home' component={HomeNavigator} options={({navigation}) => 
+                ({ headerTitle: props => <Header navigation={navigation} {...props} /> })}
+                />
             <Screen name='User Profile' component={UserProfile} />
         </Navigator>
     );
