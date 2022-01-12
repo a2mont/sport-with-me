@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import AppLoading from 'expo-app-loading';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, SafeAreaView, useWindowDimensions } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import {globalStyles} from '../styles/global';
+import { Ionicons } from '@expo/vector-icons';
+import {globalStyles, colors} from '../styles/global';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as Location from 'expo-location';
@@ -109,7 +109,6 @@ export default function Home({navigation}) {
                       latitude: e.nativeEvent.coordinate.latitude,
                       longitude: e.nativeEvent.coordinate.longitude, 
                     });
-                    //console.log(marker)
                   }
                   }
               >
@@ -180,18 +179,36 @@ export default function Home({navigation}) {
           transparent={true}
           visible={modalVisible}
         >
-          <View style={styles.modalView}>
-            <View style={styles.modalIcon}>
-              <MaterialIcons 
-                name='close'
-                size={24}
-                onPress={() => setModalVisible(false)}
-              />
-            </View>
-            <View style={styles.modalContent}>
-              <CreateActivity addActivity={addActivity} activityLocation={marker}/>
+          <View style={{flex:1, marginTop:50}}>
+            <View
+                style={{
+                  flex:0.1,
+                  backgroundColor:colors.background,
+                  borderTopLeftRadius:100,
+                  borderTopRightRadius: 100,
+                  width: 150,
+                  height: 80,
+                  alignSelf:'center'
+                }}
+              >
+                <View style={[globalStyles.modalIcon, {alignSelf:'center'}]}>
+                <Ionicons 
+                  name='remove-outline'
+                  size={60}
+                  color={colors.buttonsBackgroundLight}
+                  onPress={() => setModalVisible(false)}
+                />
+              </View>
+              </View>
+              
+            <View style={globalStyles.modalView}>
+              
+              <View style={globalStyles.modalContent}>
+                <CreateActivity addActivity={addActivity} activityLocation={marker}/>
+              </View>
             </View>
           </View>
+          
         </Modal>
       </View>
     );
@@ -212,25 +229,4 @@ const styles = StyleSheet.create({
   map:{
     flex:1,
   },
-  modalView: {
-    flex:1,
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalIcon:{
-    alignItems: "flex-start",
-  },
-  modalContent:{
-    flex:1,
-  }
 });

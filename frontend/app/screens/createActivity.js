@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity, Alert } from 'react-native';
-import { globalStyles } from '../styles/global.js';
+import { colors, globalStyles } from '../styles/global.js';
+import { Ionicons } from '@expo/vector-icons';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import SearchableDropdown from 'react-native-searchable-dropdown';
@@ -81,37 +82,38 @@ export default function ActivityForm({addActivity, activityLocation}){
                 }}
             >
                 {props => (
-                    <View style={styles.formsView}>
-                        <Text style={styles.title}>CREATE AN ACTIVITY</Text>
+                    <View style={globalStyles.container}>
+                        <Text style={styles.title}>Créer une activité</Text>
+                        <View style={globalStyles.textInput}>
+                        <Ionicons 
+                            name='search'
+                            size={22}
+                            color={colors.textLight}
+                            style={{marginVertical:5}}
+                        />
                         <SearchableDropdown
-                                onTextChange={props.handleChange('rating')}
+                                onTextChange={(text) => {}}
                                 //On text change listner on the searchable input
                                 onItemSelect={(item) => {
-                                    props.values.sport=item;
+                                    props.values.sport=item.name;
                                     
-                                    //setSelectedSport(item);
+                                    setSelectedSport(item.name);
                                 }}
                                 //onItemSelect called after the selection from the dropdown
-                                containerStyle={{ padding: 5 }}
+                                containerStyle={{}}
                                 //suggestion container style
-                                textInputStyle={{
-                                    //inserted text style
-                                    padding: 10,
-                                    borderWidth: 1,
-                                    borderColor: '#ccc',
-                                    backgroundColor: '#FAF7F6',
-                                }}
+                                textInputStyle={globalStyles.textInputContent}
                                 itemStyle={{
                                     //single dropdown item style
                                     padding: 10,
                                     marginTop: 2,
-                                    backgroundColor: '#FAF9F8',
+                                    backgroundColor: colors.textLight,
                                     borderColor: '#bbb',
                                     borderWidth: 1,
                                 }}
                                 itemTextStyle={{
                                     //text style of a single dropdown item
-                                    color: '#222',
+                                    color: colors.textDark,
                                 }}
                                 itemsContainerStyle={{
                                     //items container style you can pass maxHeight
@@ -122,13 +124,16 @@ export default function ActivityForm({addActivity, activityLocation}){
                                 //mapping of item array
                                 defaultIndex={0}
                                 //default selected item index
-                                placeholder='Sport'
+                                placeholder='Rechercher un sport'
+                                placeholderTextColor={colors.textLight}
                                 //place holder for the search input
                                 resetValue={false}
                                 //reset textInput Value with true and false state
                                 underlineColorAndroid="transparent"
                                 //To remove the underline from the android input
                             />
+                    </View>
+                        
                         <View>
                             <TouchableOpacity onPress={()=> setShowDate(true)}>
                                 {dateLabel == '' && <Text>DATE</Text>}
@@ -214,12 +219,15 @@ export default function ActivityForm({addActivity, activityLocation}){
 
 const styles = StyleSheet.create({
     title:{
-        alignItems:'flex-start',
-        marginBottom: 20,
+        color: colors.textLight,
+        alignSelf:'center',
+        margin:20,
         fontSize: 20,
+        fontWeight: 'bold',
     },
     formsView:{
         flex:1,
+        backgroundColor: colors.background,
     },
     form:{
     },

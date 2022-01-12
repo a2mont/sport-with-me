@@ -60,7 +60,7 @@ let controller = {
         return new Promise((resolve, reject) => {
             JsonWebToken.sign({
                 user: user.email, 
-                exp: Math.floor(Date.now() / 1000) + (60 * 60),
+                //exp: Math.floor(Date.now() / 1000) + (60 * 60),
             }, process.env.JWT_SECRET, (err, token) => {
                 if(err){
                     ctx.status = 400;

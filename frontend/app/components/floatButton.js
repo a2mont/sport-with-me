@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ImageBackground } from 'react-native';
+import { colors } from '../styles/global';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function FloatingButton({pressHandler}){
@@ -19,7 +20,7 @@ const styles = StyleSheet.create({
       width: 60,  
       height: 60,   
       borderRadius: 30,            
-      backgroundColor: 'black',                                    
+      backgroundColor: colors.buttonsBackground,                                    
       position: 'absolute',                                          
       bottom: 10,                                                    
       right: 10,
@@ -27,6 +28,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
     },
     buttonIcon:{
-        color:'white',
+        color:colors.textHighlight,
     }
   });

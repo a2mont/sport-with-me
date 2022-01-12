@@ -28,19 +28,22 @@ const signup = dispatch => {
 
 const signin = (dispatch) => {
   return async ({email, password}) => {
-    const token = await Api.login({email,password}).then(response => {
-      console.log('Signin');
-      dispatch({
-        type: 'signin',
-        payload: {
-          token: response.token,
-          email,
-          id: response.id
-        },
-      });
-    }).catch(error => {
-      console.log('error signing in');
-      return error;
+    await Api.login({email,password}).then(response => {
+      console.log('Signin : ' + response.status);
+      if(response.status == 200){
+        dispatch({
+          type: 'signin',
+          payload: {
+            token: response.data.token,
+            email,
+            id: response.data.id
+          },
+        });
+        return 200;
+      }else{
+        return 404;
+      }
+        
     });
   };
 };

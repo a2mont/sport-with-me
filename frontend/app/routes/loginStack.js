@@ -12,7 +12,7 @@ export default function LoginNavigator({navigation}) {
             <Screen 
                 name="Login" 
                 component={Login}
-                options={{title:''}}
+                options={{title:'', headerShown: false}}
             />
             <Screen 
                 name="Register" 

@@ -129,14 +129,14 @@ const login = async (person) => {
         });
         if(response.status == SUCCESS){
             //console.log(response.data);
-            return response.data;
+            return response;
         }else if (response.status == NOT_FOUND){
             console.log('Could not register user, error status :' + response.status);
         }
     } catch (error) {
-        console.log('Error while registering');
-        console.log(error);
-        return error.response.status;
+        console.log('Error while login in');
+        //console.log(error);
+        return error.response;
     }
 } 
 
