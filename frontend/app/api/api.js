@@ -25,6 +25,24 @@ const getAllActivities = async () => {
     }
 }
 
+const getOneActivity = async (activityId) => {
+    try {
+        const address = '/activities/'+activityId;
+        const response = await Client.get(address);
+        if (response.status == SUCCESS){
+            //console.log(response.data);
+            return response.data;
+        } else {
+            console.log('Activity not found');
+            return null;
+        }
+    } catch (error) {
+        console.log('Error while getting activity');
+        console.log(error);
+        return null;
+    }
+}
+
 const createUser = async (person) => {
     try{
         const response = await Client.post('/register', {
@@ -58,7 +76,7 @@ const createActivity = async (user, activity, jwt) => {
         const bearer = "Bearer "+ jwt;
         const id = parseInt(user);
         const newActivity = {
-            sport: activity.sport.name,
+            sport: activity.sport,
             creator: {
                 id: id
             },
@@ -107,6 +125,7 @@ const updateActivity = async (activityId, newActivity, jwt) => {
         );
         if (response.status == SUCCESS){
             //console.log('Updated: \n' + response.data);
+            return response.data;
         }else if (response.status == INVALID_REQUEST){
             console.log('Invalid request');
         }else{
@@ -207,4 +226,5 @@ export default {
     updateActivity,
     getUserActivities,
     deleteActivity,
+    getOneActivity,
 }

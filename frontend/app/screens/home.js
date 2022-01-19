@@ -68,7 +68,6 @@ export default function Home({navigation}) {
   }
 
   const addActivity = async (activity) => {
-    //console.log(state);
     await Api.createActivity(state.id, activity, state.token).then(status => {
       if(status == 201){
         setModalVisible(false);
@@ -126,8 +125,18 @@ export default function Home({navigation}) {
                     latitudeDelta: delta,
                     longitudeDelta: delta
                   });
-                  }}>
-                  <Text>Create activity</Text>
+                  }}
+                  
+                  tooltip={true}
+                  >
+                    
+                    <View>
+                        
+                    <View style={{backgroundColor:colors.background, borderRadius:5, alignSelf:'center', padding:10}}>
+                      <Text style={globalStyles.baseText}>Nouvelle activité</Text>
+                    </View>
+                    <View style={{alignSelf:'center', borderWidth:16, marginTop:-32}} />
+                    </View>
                 </Callout>
               </Marker>
             }
@@ -199,7 +208,7 @@ export default function Home({navigation}) {
                   onPress={() => setModalVisible(false)}
                 />
               </View>
-              </View>
+            </View>
               
             <View style={globalStyles.modalView}>
               

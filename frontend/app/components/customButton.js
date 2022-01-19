@@ -2,11 +2,11 @@ import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { colors, globalStyles } from '../styles/global';
 
-export default function CustomButton({onPress, title}){
+export default function CustomButton({onPress, title, style, textStyle}){
     return(
-        <View  style={styles.button}>
+        <View  style={style == null ? styles.button : style}>
             <TouchableOpacity onPress={onPress}>
-                <Text style={styles.buttonText}>{title}</Text>
+                <Text style={textStyle == null ? styles.buttonText : textStyle}>{title}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
       borderWidth:1.5
     },
     buttonText:{
-        fontSize: 15,
+        fontSize: 16,
         color: colors.textDark,
     }
   });

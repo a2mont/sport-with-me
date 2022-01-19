@@ -1,11 +1,13 @@
 import React, {useState} from 'react';
-import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity, Alert, SafeAreaView, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { colors, globalStyles } from '../styles/global.js';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Fontisto } from '@expo/vector-icons';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import CustomButton from '../components/customButton.js';
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 import SearchableDropdown from 'react-native-searchable-dropdown';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from 'moment';
 
 /*
@@ -37,11 +39,13 @@ export default function ActivityForm({addActivity, activityLocation}){
     const [timeLabel, setTimeLabel] = useState('');
     const [price,setPrice] = useState('');
     const [correct, setCorrect] = useState(true);
-    const [selectedSport, setSelectedSport] = useState('Sport')
+    const [selectedSport, setSelectedSport] = useState('Cherchez un sport')
 
     const dateChange = (date) => {
         setShowDate(false);
-        if(date >= new Date())
+        var com = new Date();
+        var today = moment(com).format('YYYY-MM-DD');
+        if(date >= today)
             setDateLabel(date);
         else
             Alert.alert('Date erronée','Le jour est déjà passé');
@@ -70,7 +74,6 @@ export default function ActivityForm({addActivity, activityLocation}){
                     comments: "",
                     }}
                 onSubmit={(values, action) => {
-                    
                     try{ 
                         addActivity(values).then(() => {
                             action.resetForm();
@@ -83,140 +86,171 @@ export default function ActivityForm({addActivity, activityLocation}){
             >
                 {props => (
                     <View style={globalStyles.container}>
-                        <Text style={styles.title}>Créer une activité</Text>
-                        <View style={globalStyles.textInput}>
-                        <Ionicons 
-                            name='search'
-                            size={22}
-                            color={colors.textLight}
-                            style={{marginVertical:5}}
-                        />
-                        <SearchableDropdown
-                                onTextChange={(text) => {}}
-                                //On text change listner on the searchable input
-                                onItemSelect={(item) => {
-                                    props.values.sport=item.name;
-                                    
-                                    setSelectedSport(item.name);
-                                }}
-                                //onItemSelect called after the selection from the dropdown
-                                containerStyle={{}}
-                                //suggestion container style
-                                textInputStyle={globalStyles.textInputContent}
-                                itemStyle={{
-                                    //single dropdown item style
-                                    padding: 10,
-                                    marginTop: 2,
-                                    backgroundColor: colors.textLight,
-                                    borderColor: '#bbb',
-                                    borderWidth: 1,
-                                }}
-                                itemTextStyle={{
-                                    //text style of a single dropdown item
-                                    color: colors.textDark,
-                                }}
-                                itemsContainerStyle={{
-                                    //items container style you can pass maxHeight
-                                    //to restrict the items dropdown height
-                                    maxHeight: '60%',
-                                }}
-                                items={sportsList}
-                                //mapping of item array
-                                defaultIndex={0}
-                                //default selected item index
-                                placeholder='Rechercher un sport'
-                                placeholderTextColor={colors.textLight}
-                                //place holder for the search input
-                                resetValue={false}
-                                //reset textInput Value with true and false state
-                                underlineColorAndroid="transparent"
-                                //To remove the underline from the android input
+                        <View >
+                            <Text style={styles.title}>Créer une activité</Text>
+                        </View>
+                        <View style={{marginVertical:20}}>
+                            <View style={globalStyles.textInput}>
+                            <Ionicons 
+                                name='search'
+                                size={20}
+                                color={colors.textLight}
+                                style={{marginVertical:5}}
                             />
-                    </View>
-                        
-                        <View>
-                            <TouchableOpacity onPress={()=> setShowDate(true)}>
-                                {dateLabel == '' && <Text>DATE</Text>}
-                                {dateLabel != '' && <Text>{dateLabel}</Text>}
-                            </TouchableOpacity>
-                            <Button onPress={() => setFullday(!fullday)} title="Fullday"/>
-                            {!fullday && <TouchableOpacity onPress={()=> setShowTime(true)}>
-                                {timeLabel == '' && <Text>HOUR</Text>}
-                                {timeLabel != '' && <Text>{timeLabel}</Text>}
-                            </TouchableOpacity>}
+                            <SafeAreaView>
+                                <SearchableDropdown
+                                    nestedScrollEnabled 
+                                    onTextChange={(text) => {}}
+                                    //On text change listner on the searchable input
+                                    onItemSelect={(item) => {
+                                        props.values.sport=item.name;
+                                        setSelectedSport(item.name);
+                                    }}
+                                    //onItemSelect called after the selection from the dropdown
+                                    containerStyle={{}}
+                                    //suggestion container style
+                                    textInputStyle={globalStyles.textInputContent}
+                                    itemStyle={{
+                                        //single dropdown item style
+                                        padding: 10,
+                                        marginTop: 2,
+                                        backgroundColor: colors.textLight,
+                                    }}
+                                    itemTextStyle={{
+                                        //text style of a single dropdown item
+                                        color: colors.textDark,
+                                    }}
+                                    itemsContainerStyle={{
+                                        //items container style you can pass maxHeight
+                                        //to restrict the items dropdown height
+                                        maxHeight: '80%',
+                                        
+                                    }}
+                                    items={sportsList}
+                                    //mapping of item array
+                                    defaultIndex={0}
+                                    //default selected item index
+                                    placeholderTextColor={colors.textLight}
+                                    placeholder={selectedSport}
+                                    //place holder for the search input
+                                    resetValue={false}
+                                    //reset textInput Value with true and false state
+                                    underlineColorAndroid="transparent"
+                                    //To remove the underline from the android input
+                                />
+                            </SafeAreaView>
                         </View>
-                        <View>
-                            <TextInput
-                                value={price}
-                                onChangeText={(val) => {
-                                    props.values.price = val;
-                                    setPrice(val);
-                                }}
-                                placeholder='Prix' 
-                                keyboardType='numeric'/>
-                        </View>
-                        {/*<Text>Checkbox public/privé + infos sur signification</Text>
-                        <View>
-                                <TouchableOpacity onPress={() => {
-                                    const value = !restricted;
-                                    props.values.public = value;
-                                    setRestricted(value);
-                                    }}>
-                                    <Text>Public ? : {restricted.toString()}</Text>
-                                </TouchableOpacity>
-                                </View>*/}
-                        <View style={styles.form}>
-                            <Text>Commentaires optionnels</Text>
-                            <View style={styles.formline}>
-                                <TextInput 
-                                    style={globalStyles.input}
-                                    placeholder='Commentaires'
-                                    onChangeText={(val) => props.values.comments = val}
+                        <ScrollView style={{paddingBottom:150}}> 
+                            <View style={[globalStyles.textInput,{flexDirection:'column', justifyContent:'flex-start', marginVertical:20}]}>
+                                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center', alignContent:'space-between'}}>
+                                    <TouchableOpacity style={styles.dateOpacity} onPress={()=> setShowDate(true)}>
+                                        {dateLabel == '' && <Text style={styles.menuText}>Date</Text>}
+                                        {dateLabel != '' && <Text style={styles.menuText}>{dateLabel}</Text>}
+                                        <Fontisto 
+                                            name='date'
+                                            size={18}
+                                            color={colors.textLight}
+                                            style={styles.menuIcon}
+                                        />
+                                    </TouchableOpacity>
+                                    <View style={styles.dateOpacity}>
+                                        <Text style={styles.menuText}>Jour entier ?</Text>
+                                        <BouncyCheckbox
+                                            size={menuIconSize}
+                                            fillColor={colors.textLight}
+                                            unfillColor={colors.textHighlight}
+                                            iconStyle={{ borderColor: colors.textHighlight, borderRadius: 6, marginLeft:10}}
+                                            textStyle={{  }}
+                                            onPress={(isChecked) => setFullday(isChecked)}
+                                        />
+                                    </View>
+                                    
+                                </View>
+                                
+                                {!fullday && <TouchableOpacity style={{flexDirection:'row'}} onPress={()=> setShowTime(true)}>
+                                    {timeLabel == '' && <Text style={styles.menuText}>Heure</Text>}
+                                    {timeLabel != '' && <Text style={styles.menuText}>{timeLabel}</Text>}
+                                    <Ionicons 
+                                        name='time-outline'
+                                        size={menuIconSize}
+                                        color={colors.textLight}
+                                        style={styles.menuIcon}
+                                    />
+                                </TouchableOpacity>}
+                            </View>
+                            <View style={[globalStyles.textInput, {paddingHorizontal: 0,paddingLeft: 5, width:80, alignSelf:'flex-end'}]}>
+                                <TextInput
+                                    value={price}
+                                    onChangeText={(val) => {
+                                        props.values.price = val;
+                                        setPrice(val);
+                                    }}
+                                    onEndEditing={() =>{ 
+                                        if (price.localeCompare('') != 0 && price.localeCompare('.-') != 0) {
+                                            setPrice(`${price}.-`);
+                                        }
+                                    }}
+                                    onFocus={() => {
+                                        if(price.length > 1)
+                                            setPrice(price.slice(0, price.length - 2));
+                                    }}
+                                    placeholder='Prix'
+                                    placeholderTextColor={colors.textLight}
+                                    keyboardType='numeric'
+                                    style={[globalStyles.textInputContent, {marginLeft:10,}]}
                                 />
                             </View>
-                            {showDate && (
-                                <DateTimePicker
-                                    value={date}
-                                    mode='date'
-                                    is24Hour={true}
-                                    display="default"
-                                    onChange={(event,val) => {
-                                        //var newDate = moment(val).format('YYYY-MM-DD');
-                                        const value = moment(val).format('YYYY-MM-DD');
-                                        dateChange(value);
-                                        setDate(val);
-                                        //console.log(moment(val).format('YYYY-MM-DD'))
-                                        props.values.date.day = value;
-                                        //console.log(props.values.date);
-                                    }}
-                                />)
-                            }
-                            {showTime && (
-                                <DateTimePicker
-                                    value={date}
-                                    mode='time'
-                                    is24Hour={true}
-                                    display="spinner"
-                                    onChange={(event,val) => {
-                                        //console.log(val);
-                                        const value = moment(val).format('HH:mm');
-                                        timeChange(value);
-                                        setDate(val);
-                                        props.values.date.hour = value;
-                                        //console.log(props.values.time);
-                                    }}
-                                />)
-                            }
-                        </View>
-                        {!correct && <Text style={globalStyles.errorText}>L'activité n'est pas correctment remplie</Text>}
-                        <Button onPress={() => {props.handleSubmit();}} title='Submit'/>
+                            <View style={{marginVertical:20}}>
+                                <View style={globalStyles.textInput}>
+                                    <TextInput 
+                                        style={globalStyles.textInputContent}
+                                        placeholder='Commentaires optionnels'
+                                        placeholderTextColor={colors.textLight}
+                                        onChangeText={(val) => props.values.comments = val}
+                                    />
+                                </View>
+                            </View>
+                            
+                            {!correct && <Text style={[globalStyles.errorText, {alignSelf:'center'}]}>L'activité n'est pas correctment remplie</Text>}
+                            <View style={{marginVertical:20}}>
+                                <CustomButton onPress={() => {props.handleSubmit();}} title="C'est parti !"/>
+                            </View>
+                        </ScrollView>
+                        
+                        <DateTimePicker
+                            value={date}
+                            mode='date'
+                            isVisible={showDate}
+                            onConfirm={val => {
+                                const value = moment(val).format('YYYY-MM-DD');
+                                dateChange(value);
+                                setDate(val);
+                                props.values.date.day = value;
+                            }}
+                            onCancel={() => {setDateLabel(''); setShowDate(false);}}
+                        />
+                        <DateTimePicker
+                            value={date}
+                            mode='time'
+                            is24Hour={true}
+                            isVisible={showTime}
+                            onConfirm={val => {
+                                const value = moment(val).format('HH:mm');
+                                timeChange(value);
+                                setDate(val);
+                                props.values.date.hour = value;
+                            }}
+                            onCancel={() => {setTimeLabel(''); setShowTime(false);}}
+                        />
+                        
                     </View>
+                </View>
                 )}
             </Formik>
         </View>
     );
 }
-
+const menuIconSize = 18;
 const styles = StyleSheet.create({
     title:{
         color: colors.textLight,
@@ -225,15 +259,18 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
-    formsView:{
-        flex:1,
-        backgroundColor: colors.background,
+    menuText:{
+        color:colors.textLight, 
+        fontSize:16,
+        marginVertical:5
     },
-    form:{
+    menuIcon:{
+        marginHorizontal:10, 
+        marginVertical:8
     },
-    formline:{
-        alignItems:'flex-start',
+    dateOpacity:{
+        flex:1, 
         flexDirection:'row',
-        alignItems:'center',
     },
+
 })

@@ -15,10 +15,11 @@ export default function Login({navigation}){
 
     const handleSignin = async ({email,password}) => {
             signin({email,password}).then(() => {
-                if(state.token != null){
-                    console.log('Wrong password/email');
-                    setResult(404);
-                }
+                setTimeout(() => {
+                    if(state.token == null){
+                        setResult(404);
+                    }}, 1000);
+                
             });
     }
 

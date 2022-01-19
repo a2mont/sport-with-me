@@ -8,7 +8,9 @@ export const colors = {
   buttonsBackgroundLight: '#bdbdbd',
   textDark: '#000000',
   textLight: '#aeaeae',
-  textHighlight: '#e6e6e6'
+  textHighlight: '#e6e6e6',
+  inactiveButton: '#313131',
+  error:'#c62828',
 
 }
 export const globalStyles = StyleSheet.create({
@@ -80,7 +82,7 @@ export const globalStyles = StyleSheet.create({
       flex:1,
     },
     errorText:{
-      color: '#c62828',
+      color: colors.error,
       fontWeight: 'bold',
       marginBottom: 10,
       marginTop: 6,
