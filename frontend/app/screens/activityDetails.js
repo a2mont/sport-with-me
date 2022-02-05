@@ -18,9 +18,9 @@ export default function ActivityDetails({navigation, route}) {
   const [message, setMessage] = useState('');
   const {state,dispatch} = useContext(AuthContext);
 
-  /* useEffect(() => {
+  useEffect(() => {
     registrationCheck();
-  },[registered]); */
+  },[registered]);
 
   const registrationCheck = () => {
     for(var i = 0; i < activityData.participants.length; i++){

@@ -19,11 +19,11 @@ export default function Activities({navigation}) {
 
   const {state,dispatch} = useContext(AuthContext);
 
-  /* useEffect(() => {sortList(sortMode)}, [sortMode]);
+  useEffect(() => {sortList(sortMode)}, [sortMode]);
   useEffect(() => {
     loadActivities().then(() => setSortMode(0));
   }
-  ,[showAll]); */
+  ,[showAll]);
 
   const loadActivities = async () => {
     let toReturn = [];

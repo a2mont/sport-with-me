@@ -33,7 +33,7 @@ export default function Home({navigation}) {
 
   const {state,dispatch} = useContext(AuthContext);
 
-  /* useEffect(() => {
+  useEffect(() => {
     let mounted = true;
     if (mounted)
       loadActivities();
@@ -55,7 +55,7 @@ export default function Home({navigation}) {
         longitudeDelta: delta
       });
     return () => {mounted = false;}
-  }, [userPos]); */
+  }, [userPos]);
 
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
