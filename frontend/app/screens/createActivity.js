@@ -1,33 +1,14 @@
 import React, {useState} from 'react';
-import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity, Alert, SafeAreaView, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, TextInput, View, Text, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native';
 import { colors, globalStyles } from '../styles/global.js';
 import { Ionicons, Fontisto } from '@expo/vector-icons';
 import { Formik } from 'formik';
-import * as yup from 'yup';
 import CustomButton from '../components/customButton.js';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import SearchableDropdown from 'react-native-searchable-dropdown';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from 'moment';
 
-/*
-const activitySchema = yup.object({
-    
-    sport: yup.string().required(),
-    date: yup.object().shape({
-        date: yup.date().min(new Date()).required(),
-        hour: yup.date().required(),
-    }),
-    location: yup.object().shape({
-        latitude: yup.string().required(),
-        longitude: yup.string().required(),
-    }),
-    price: yup.number(),
-    public: yup.boolean(),
-    comments: yup.string(),
-
-  });
-*/
 export default function ActivityForm({addActivity, activityLocation}){
     const sportsData = require('../assets/sports.json');
     const sportsList = sportsData.sports;
@@ -136,6 +117,9 @@ export default function ActivityForm({addActivity, activityLocation}){
                                     resetValue={false}
                                     //reset textInput Value with true and false state
                                     underlineColorAndroid="transparent"
+                                    listProps={{
+                                        maxToRenderPerBatch:10,
+                                        initialNumToRender:10}}
                                     //To remove the underline from the android input
                                 />
                             </SafeAreaView>

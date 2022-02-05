@@ -2,8 +2,8 @@ import { StyleSheet} from 'react-native';
 
 export const colors = {
   background: '#121212',
-  selected: 'tomato',
-  inactive: '#e6e6e6',
+  selected: '#e6e6e6',
+  inactive: '#969696',
   buttonsBackground: '#212121',
   buttonsBackgroundLight: '#bdbdbd',
   textDark: '#000000',

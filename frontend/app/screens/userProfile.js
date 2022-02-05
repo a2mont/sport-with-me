@@ -15,9 +15,9 @@ export default function UserProfile() {
     //console.log(user);
   }
 
-  useEffect(() => {
+  /* useEffect(() => {
     loadInfos()
-  }, []);
+  }, []); */
   return (
     <View style={globalStyles.container}>
       {user && 

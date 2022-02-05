@@ -4,11 +4,11 @@
     "slug": "SportWithMe",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/pelops_logo.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/pelops_logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#212121"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -21,13 +21,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      },
-      "config":{
-        "googleMaps" : {
-          "apiKey": "AIzaSyBXg7DRZ0mM1lI2N4zi-h8KRSQYmvpri04"
-        }
+        "foregroundImage": "./assets/pelops_logo.png",
+        "backgroundColor": "#121212"
       }
     },
     "web": {

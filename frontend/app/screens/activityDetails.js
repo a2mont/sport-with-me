@@ -18,12 +18,9 @@ export default function ActivityDetails({navigation, route}) {
   const [message, setMessage] = useState('');
   const {state,dispatch} = useContext(AuthContext);
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      registrationCheck();
-    });
-    return unsubscribe;
-  },[navigation]);
+  /* useEffect(() => {
+    registrationCheck();
+  },[registered]); */
 
   const registrationCheck = () => {
     for(var i = 0; i < activityData.participants.length; i++){

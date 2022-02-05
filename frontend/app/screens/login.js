@@ -1,5 +1,5 @@
 import React, {useState,useContext} from 'react';
-import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { globalStyles, colors } from '../styles/global.js';
 import {Context as AuthContext} from '../context/authContext';
 import CustomButton from '../components/customButton.js';
@@ -17,7 +17,7 @@ export default function Login({navigation}){
             signin({email,password}).then(() => {
                 setTimeout(() => {
                     if(state.token == null){
-                        setResult(404);
+                        //setResult(404);
                     }}, 1000);
                 
             });
@@ -31,7 +31,7 @@ export default function Login({navigation}){
                     alignItems: 'center',
                     marginTop:'20%'
                 }}>
-                    <Text style={globalStyles.baseText}>LOGO</Text>
+                    <Image style={{height:125, width:125, tintColor:colors.textLight}} source={require('../assets/pelops_logo.png')}/>
                 </View>
             <View style={{
                 flex:2
@@ -85,7 +85,7 @@ export default function Login({navigation}){
                         marginTop:'5%',
                         marginBottom: '10%',
                     }}>
-                    <CustomButton onPress={() => handleSignin({email,password})} title='CONNECTION'/>
+                    <CustomButton onPress={() => handleSignin({email,password})} title='CONNEXION'/>
                 </View>
                     
                 <View style={{

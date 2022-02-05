@@ -1,5 +1,5 @@
 import React from 'react'
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator, HeaderTitle } from "@react-navigation/stack";
 import { Button, Text } from 'react-native';
 import Activities from "../screens/activities";
 import ActivityDetails from "../screens/activityDetails";
@@ -18,7 +18,13 @@ export default function ActivitiesNavigator({navigation}){
                     title:"Activités",
                     headerStyle:{
                         backgroundColor: colors.background,
-                    }
+                        shadowColor:'transparent',
+                        elevation:0,
+                    },
+                    headerTitleStyle:{
+                        color: colors.textLight,
+                        fontSize:26,
+                    },
                 }} 
             />
             <Screen

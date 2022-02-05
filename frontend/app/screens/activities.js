@@ -1,53 +1,66 @@
 
 import React,{useState, useEffect, useContext} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Button} from 'react-native';
-import {globalStyles} from '../styles/global';
+import { StyleSheet, Text, View, FlatList,} from 'react-native';
+import {colors, globalStyles} from '../styles/global';
 import ActivityItem from '../components/activityItem';
-import DropDownPicker from 'react-native-dropdown-picker';
 import SwitchSelector from 'react-native-switch-selector';
 import Api from '../api/api';
 import {Context as AuthContext} from '../context/authContext';
+import CustomButton from '../components/customButton';
+
 
 export default function Activities({navigation}) {
   const [activities,setActivities] = useState([]);
   const [refreshing, setRefereshing] = useState(false);
-  const [direction, setDirection] = useState(null);
   const [showAll, setShowAll] = useState(0);
+  const [sortMode, setSortMode] = useState(0);
+  const [alphaState, setAlphaState] = useState('Alphabétiquement');
+  const [dateState, setDateState] = useState('Par date');
 
   const {state,dispatch} = useContext(AuthContext);
 
-  const loadActivities = async () => {
-    let allActivities;
-    if(showAll == 0)
-      allActivities = await Api.getUserActivities(state.id);
-    else
-      allActivities = await Api.getAllActivities();
-    setActivities(allActivities);
-  }
-
+  /* useEffect(() => {sortList(sortMode)}, [sortMode]);
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      refreshHandler();
-    });
-    return unsubscribe;
-  },[navigation]);
+    loadActivities().then(() => setSortMode(0));
+  }
+  ,[showAll]); */
+
+  const loadActivities = async () => {
+    let toReturn = [];
+    if(showAll == 0)
+    toReturn = await Api.getUserActivities(state.id);
+    else{
+      let allActivities = await Api.getAllActivities();
+      for(let i = 0; i < allActivities.length; i++ ){
+        let act = allActivities[i];
+        for(let j = 0; j < act.participants.length; j++){
+          if(act.participants[j].id == state.id && act.creator.id != state.id){
+            toReturn.push(act);
+            break;
+          }
+        }
+        
+      }
+    }
+    setActivities(toReturn);
+  }
 
   const pressHandler = (key) => {
     const activity = activities.filter(activity => activity.id == key);
-    //console.log(activity);
     if(activity.length > 0)
       navigation.navigate('Details', {activity: activity[0]});
     else
-      console.log('Could not find activity')
+      console.log('Could not find activity');
   };
 
   const refreshHandler = () => {
     setRefereshing(true);
-    loadActivities().then(setRefereshing(false));
+    loadActivities().then(() => {sortList();setRefereshing(false)});
   }
 
   const handleShow = (value) => {
     setShowAll(value);
+    refreshHandler();
   }
 
   const compareItems = (a,b) => {
@@ -60,72 +73,129 @@ export default function Activities({navigation}) {
     return 0;
   }
 
-  const sortList = (value) => {
+  const sortList = (sortOrder) => {
     setActivities( (current) => {
-      setDirection(value);
-      switch(value){
-        case 'stob':
+      switch(sortOrder){
+        case 0:
+          setAlphaState("Alphabétiquement");
+          setDateState('Par date');
+          break;
+        case 1:
+          setAlphaState("Croissant");
+          setDateState('Par date');
           current.sort((a,b) => { return compareItems(a.sport,b.sport) });
           break;
-        case 'btos':
+        case 2:
+          setAlphaState("Décroissant");
+          setDateState('Par date');
           current.sort((a,b) => { return compareItems(b.sport,a.sport) });
           break;
-        case 'ntoo':
+        case 3:
+          setDateState("Plus proche");
+          setAlphaState("Alphabétiquement");
           current.sort((a,b) => { return compareItems(a.date.day,b.date.day) });
           break;
-        case 'oton':
+        case 4:
+          setDateState("Plus lointain");
+          setAlphaState("Alphabétiquement");
           current.sort((a,b) => { return compareItems(b.date.day,a.date.day) });
           break;
       }
+      
       return current;
     });
   }
 
+
   return (
     <View style={globalStyles.container}>
-      <View>
+      <View style={{marginHorizontal:5, marginTop:15, marginBottom:10}}>
         <SwitchSelector 
           initial={showAll}
-          onPress={value =>  {handleShow(value); refreshHandler();}}
+          onPress={value =>  {handleShow(value);}}
           value={showAll}
           options={[
             {label: 'Mes activités', value: 0},
-            {label: 'Toutes les activités', value: 1}
+            {label: 'Mes inscriptions', value: 1}
           ]}
+          backgroundColor={colors.inactive}
+          buttonColor={colors.selected}
+          selectedColor={colors.textDark}
+          fontSize={15}
         />
       </View>
-        <View style={styles.filterView}>
-          <DropDownPicker 
-            items={[
-              {label: 'Croissant', value:'stob'},
-              {label: 'Decroissant', value:'btos'}
-            ]}
-            defaultValue= {null}
-            placeholder="Alphabetiquement"
-            containerStyle={styles.filterButton}
-            onChangeItem={item => sortList(item.value)}
-          />
-          <DropDownPicker 
-            items={[
-              {label: 'Plus Recent', value:'ntoo'},
-              {label: 'Plus Ancien', value:'oton'}
-            ]}
-            defaultValue= {null}
-            placeholder="Par date"
-            containerStyle={styles.filterButton}
-            onChangeItem={item => sortList(item.value)}
-          />
-        </View>
-        <View style={{paddingBottom:50}}>
+        
+        <View style={{marginVertical: 10,paddingBottom:50, flex:1}}>
           <FlatList 
             data={activities}
             keyExtractor={(item, index) => item.id.toString()}
             renderItem={({item}) => (
               <ActivityItem activity={item} pressHandler={pressHandler} />
             )}
-            extraData={direction}
             refreshing={refreshing}
             onRefresh={refreshHandler}
+            ListEmptyComponent={<Text style={{marginVertical: 20, color: colors.textLight, alignSelf: 'center', fontSize:16}}>Aucune activité ici...</Text>}
+          />
+        </View>
+        <View style={styles.filterView}>
+        <CustomButton 
+            title={alphaState}
+            style={alphaState != 'Alphabétiquement' ? ({
+              backgroundColor:colors.selected,
+              borderColor:colors.textDark,
+              borderTopLeftRadius:10, 
+              borderTopRightRadius:0, 
+              borderBottomLeftRadius:10,
+              borderBottomRightRadius:0,
+              borderRightWidth:0.5,
+              flex:1,
+              height:40,
+              alignItems:'center',
+              justifyContent:'center',
+            }): ({
+              
+              backgroundColor:colors.inactive,
+              borderColor:colors.textDark,
+              borderTopLeftRadius:10, 
+              borderTopRightRadius:0, 
+              borderBottomLeftRadius:10,
+              borderBottomRightRadius:0,
+              borderRightWidth:0.5,
+              flex:1,
+              height:40,
+              alignItems:'center',
+              justifyContent:'center',
+            })}
+            onPress={() => {sortMode == 2 ? setSortMode(1) : setSortMode(2)}}
+          />
+          <CustomButton 
+            title={dateState}
+            style={dateState != 'Par date' ? ({
+              backgroundColor:colors.selected,
+              borderColor:colors.textDark,
+              borderTopLeftRadius:0, 
+              borderTopRightRadius:10, 
+              borderBottomLeftRadius:0,
+              borderBottomRightRadius:10,
+              borderLeftWidth:0.5,
+              flex:1,
+              height:40,
+              alignItems:'center',
+              justifyContent:'center',
+            }): ({
+              backgroundColor:colors.inactive,
+              borderColor:colors.textDark,
+              borderTopLeftRadius:0, 
+              borderTopRightRadius:10, 
+              borderBottomLeftRadius:0,
+              borderBottomRightRadius:10,
+              borderLeftWidth:0.5,
+              flex:1,
+              height:40,
+              alignItems:'center',
+              justifyContent:'center',
+            }) }
+            onPress={() => {sortMode == 4 ? setSortMode(3) : setSortMode(4)}}
           />
         </View>
     </View>
@@ -134,8 +204,12 @@ export default function Activities({navigation}) {
 
 
 const styles = StyleSheet.create({
+  
   filterView:{
     flexDirection:'row',
+    marginHorizontal:7,
+    position:'absolute',
+    bottom:'2%',
   },
   filterButton:{
     flex:1,
