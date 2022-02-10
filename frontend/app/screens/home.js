@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect, useContext } from 'react';
-import AppLoading from 'expo-app-loading';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {globalStyles, colors} from '../styles/global';
