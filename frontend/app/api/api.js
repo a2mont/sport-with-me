@@ -71,6 +71,30 @@ const createUser = async (person) => {
 
 }
 
+const deleteUser = async (id, jwt) => {
+    try {
+        const bearer = "Bearer "+ jwt;
+        const address = '/users/'+id;
+        const response = await Client.delete(address,
+            {
+                headers: {
+                    Authorization: bearer,
+                },
+            });
+        if (response.status == DELETED){
+            //console.log(response.data);
+            return response.status;
+        } else {
+            console.log('User not found');
+        }
+        return response.status;
+    } catch (error) {
+        console.log('Error while getting activity');
+        console.log(error);
+        return error.response.status;
+    } 
+}
+
 const createActivity = async (user, activity, jwt) => {
     try {
         const bearer = "Bearer "+ jwt;
@@ -227,4 +251,5 @@ export default {
     getUserActivities,
     deleteActivity,
     getOneActivity,
+    deleteUser,
 }

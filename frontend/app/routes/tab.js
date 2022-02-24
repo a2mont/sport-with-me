@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DrawerNavigator from './drawer';
 import ActivitiesNavigator from './activityStack';
-import UserProfile from '../screens/userProfile';
+import AboutNavigator from "./aboutStack";
 import HomeNavigator from "./homeStack";
 import { globalStyles, colors } from "../styles/global";
 
@@ -50,7 +50,7 @@ export default function BottomTabNavigator(){
             <Screen name='Home' component={HomeNavigator} options={({navigation}) => 
                 ({ headerTitle: props => <Header navigation={navigation} {...props} /> })}
                 />
-            <Screen name='User Profile' component={UserProfile} />
+            <Screen name='User Profile' component={AboutNavigator} />
         </Navigator>
     );
 }

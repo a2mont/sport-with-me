@@ -3,4 +3,4 @@ import {HOST} from '@env';
 
 export default Axios.create({
     baseURL: HOST,
-});
+});  

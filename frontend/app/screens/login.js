@@ -1,5 +1,5 @@
-import React, {useState,useContext} from 'react';
-import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import React, {useState,useContext, useEffect} from 'react';
+import {TextInput, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { globalStyles, colors } from '../styles/global.js';
 import {Context as AuthContext} from '../context/authContext';
 import CustomButton from '../components/customButton.js';
@@ -8,17 +8,27 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 export default function Login({navigation}){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [result, setResult] = useState(0);
+    const [result, setResult] = useState(false);
 
     const {state, signin} = useContext(AuthContext);
 
+    const timeout = null;
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('beforeRemove', () => {
+          if (timeout != null)
+            clearTimeout(timeout);
+        });
+    
+        return unsubscribe;
+      }, [navigation]);
 
     const handleSignin = async ({email,password}) => {
             signin({email,password}).then(() => {
-                setTimeout(() => {
+                const timeout = setTimeout(() => {
                     if(state.token == null){
-                        //setResult(404);
-                    }}, 1000);
+                        setResult(404);
+                    }}, 500);
                 
             });
     }
@@ -70,12 +80,10 @@ export default function Login({navigation}){
                     />
                     </View>
                 </View>
-                {result != 0 ? (
+                {result && (
                     <View style={{marginVertical:10}}>
                         <Text style={[globalStyles.errorText, {textAlign:'center'}]}>Email ou mot de passe incorrect</Text>
                     </View>
-                ):(
-                    <Text style={globalStyles.errorText}></Text>
                 )}
                 
             </View>

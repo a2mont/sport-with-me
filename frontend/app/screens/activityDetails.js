@@ -8,6 +8,7 @@ moment.locale('fr');
 import UserItem from '../components/userItem';
 import Api from '../api/api';
 import CustomButton from '../components/customButton';
+import Message from '../components/message';
 import {Context as AuthContext} from '../context/authContext';
 
 export default function ActivityDetails({navigation, route}) {
@@ -246,28 +247,10 @@ export default function ActivityDetails({navigation, route}) {
                 />
               </View>
             </View>
-            {message != '' && <View style={{
-          backgroundColor:`${colors.textHighlight}c8`, 
-          position:'absolute', 
-          alignSelf:'center', 
-          justifyContent:'center',
-          bottom:'10%',
-          borderRadius:10,
-          }}>
-          <Text style={{alignSelf:'center', padding:10, fontSize:15, color: `${colors.textDark}ef`}}>{message}</Text>
-        </View>}
+            {message != '' && <Message text={message}/>}
           </View>
         </Modal>
-        {message != '' && <View style={{
-          backgroundColor:`${colors.textHighlight}c8`, 
-          position:'absolute', 
-          alignSelf:'center', 
-          justifyContent:'center',
-          bottom:'10%',
-          borderRadius:10,
-          }}>
-          <Text style={{alignSelf:'center', padding:10, fontSize:15, color: `${colors.textDark}ef`}}>{message}</Text>
-        </View>}
+        {message != '' && <Message text={message}/>}
     </SafeAreaView>
   );
 }

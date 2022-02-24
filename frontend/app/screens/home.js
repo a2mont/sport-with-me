@@ -56,6 +56,12 @@ export default function Home({navigation}) {
     return () => {mounted = false;}
   }, [userPos]);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => loadActivities());
+
+    return unsubscribe;
+  }, [navigation]);
+
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -144,7 +150,7 @@ return (
                   <View style={{backgroundColor:colors.background, borderRadius:5, alignSelf:'center', padding:10}}>
                     <Text style={globalStyles.baseText}>Nouvelle activité</Text>
                   </View>
-                  <View style={{alignSelf:'center', borderWidth:16, marginTop:-32}} />
+                  <View style={{alignSelf:'center', borderWidth:16, marginTop:32}} />
                   </View>
               </Callout>
             </Marker>

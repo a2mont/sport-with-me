@@ -25,6 +25,11 @@ export default function Activities({navigation}) {
   }
   ,[showAll]);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => loadActivities());
+    return unsubscribe;
+  }, [navigation]);
+
   const loadActivities = async () => {
     let toReturn = [];
     if(showAll == 0)
