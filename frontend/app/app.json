@@ -22,7 +22,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/pelops_logo.png",
-        "backgroundColor": "#121212"
+        "backgroundColor": "#fff"
       }
     },
     "web": {

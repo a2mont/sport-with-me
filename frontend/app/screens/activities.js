@@ -12,7 +12,7 @@ import CustomButton from '../components/customButton';
 export default function Activities({navigation}) {
   const [activities,setActivities] = useState([]);
   const [refreshing, setRefereshing] = useState(false);
-  const [showAll, setShowAll] = useState(0);
+  const [showAll, setShowAll] = useState();
   const [sortMode, setSortMode] = useState(0);
   const [alphaState, setAlphaState] = useState('Alphabétiquement');
   const [dateState, setDateState] = useState('Par date');
@@ -25,11 +25,11 @@ export default function Activities({navigation}) {
   }
   ,[showAll]);
 
+
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => loadActivities());
+    const unsubscribe = navigation.addListener('focus', () => refreshHandler());
     return unsubscribe;
   }, [navigation]);
-
   const loadActivities = async () => {
     let toReturn = [];
     if(showAll == 0)

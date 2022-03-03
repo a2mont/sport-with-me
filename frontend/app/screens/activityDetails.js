@@ -19,6 +19,18 @@ export default function ActivityDetails({navigation, route}) {
   const [message, setMessage] = useState('');
   const {state,dispatch} = useContext(AuthContext);
 
+  
+  var timeout = null;
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      if (timeout != null)
+        clearTimeout(timeout);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+  
   useEffect(() => {
     registrationCheck();
   },[registered]);
@@ -54,14 +66,14 @@ export default function ActivityDetails({navigation, route}) {
     }else{
       setMessage("Erreur dans l'inscription...");
     }
-    setTimeout(() => {
+    timeout = setTimeout(() => {
       setMessage('');}, 1500);
   }
 
   const unregister = async() => {
     if(activityData.creator.id == state.id){
       setMessage("L'organisateur d'une activité ne peut pas s'en désinscrire !");
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         setMessage('');}, 1500);
       return;
     }
@@ -80,7 +92,7 @@ export default function ActivityDetails({navigation, route}) {
     }else{
       setMessage("Erreur dans la désinscription...");
     }
-    setTimeout(() => {
+    timeout = setTimeout(() => {
       setMessage('');}, 1500);
   }
 

@@ -12,7 +12,7 @@ export default function Login({navigation}){
 
     const {state, signin} = useContext(AuthContext);
 
-    const timeout = null;
+    var timeout = null;
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('beforeRemove', () => {
@@ -25,7 +25,7 @@ export default function Login({navigation}){
 
     const handleSignin = async ({email,password}) => {
             signin({email,password}).then(() => {
-                const timeout = setTimeout(() => {
+                timeout = setTimeout(() => {
                     if(state.token == null){
                         setResult(404);
                     }}, 500);

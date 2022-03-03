@@ -20,7 +20,8 @@ export default function ActivityForm({addActivity, activityLocation}){
     const [timeLabel, setTimeLabel] = useState('');
     const [price,setPrice] = useState('');
     const [correct, setCorrect] = useState(true);
-    const [selectedSport, setSelectedSport] = useState('Cherchez un sport')
+    const [selectedSport, setSelectedSport] = useState('Cherchez un sport');
+    
 
     const dateChange = (date) => {
         setShowDate(false);

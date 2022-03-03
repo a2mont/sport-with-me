@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {globalStyles, colors} from '../styles/global';
@@ -11,9 +11,10 @@ import Api from '../api/api';
 import CreateActivity from './createActivity';
 import {Context as AuthContext} from '../context/authContext';
 import FloatingButton from '../components/floatButton';
+import MarkerCallout from '../components/markerCallout';
 
 export default function Home({navigation}) {
-  var delta = 0.01;
+  const [delta, setDelta] = useState(0.01);
   const [userPos, setUserPos] = useState({
     latitude:46.8,
     longitude:7.17,
@@ -31,6 +32,8 @@ export default function Home({navigation}) {
   });
 
   const {state,dispatch} = useContext(AuthContext);
+
+  const mapRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -55,6 +58,13 @@ export default function Home({navigation}) {
       });
     return () => {mounted = false;}
   }, [userPos]);
+
+  useEffect(() => {
+    let mounted = true;
+    if (mounted)
+      mapRef.current.animateToRegion(region, 0.5 * 1000);
+    return () => {mounted = false;}
+  },[region]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => loadActivities());
@@ -114,23 +124,32 @@ return (
     <View style={globalStyles.container}>
           <View style={styles.map}>
             <MapView
+                ref={mapRef}
                 style={{ flex: 1 }}
                 provider={PROVIDER_GOOGLE}
                 showsUserLocation={true}
-                region={region}
+                initialRegion={region}
                 onPress={(e) => {
                   setMarker({
                     latitude: e.nativeEvent.coordinate.latitude,
                     longitude: e.nativeEvent.coordinate.longitude, 
                   });
+                  setRegion({
+                    latitude: e.nativeEvent.coordinate.latitude,
+                    longitude: e.nativeEvent.coordinate.longitude, 
+                    latitudeDelta: delta,
+                    longitudeDelta: delta
+                  });
                 }
                 }
+                showsMyLocationButton={false}
             >
           {
             marker && 
             <Marker 
               coordinate={marker} 
               title='Create activity'
+              pinColor='blue'
             >
               <Callout onPress={(e) => {
                 setModalVisible(true);
@@ -141,31 +160,32 @@ return (
                   longitudeDelta: delta
                 });
                 }}
-                
                 tooltip={true}
                 >
-                  
-                  <View>
-                      
-                  <View style={{backgroundColor:colors.background, borderRadius:5, alignSelf:'center', padding:10}}>
-                    <Text style={globalStyles.baseText}>Nouvelle activité</Text>
-                  </View>
-                  <View style={{alignSelf:'center', borderWidth:16, marginTop:32}} />
-                  </View>
+                  <MarkerCallout textComponent={<Text style={globalStyles.baseText}>Nouvelle activité</Text>}/>
               </Callout>
             </Marker>
           }
-          {activities.map(activity =>(
+          {activities.map(activity =>{
+          if((Math.abs(activity.location.latitude - region.latitude) < delta ) && (Math.abs(activity.location.longitude - region.longitude) < delta))
+          
+            {return(
             <Marker
-            key={activity.id}
-            coordinate={activity.location}
-            title={activity.sport}
+              key={activity.id}
+              coordinate={activity.location}
+              title={activity.sport}
             >
-              <Callout onPress={() => pressHandler(activity.id)}>
-                <Text>{activity.sport}</Text>
+              <Callout onPress={() => pressHandler(activity.id)} tooltip>
+                <MarkerCallout textComponent={
+                  <View>
+                    <Text style={[globalStyles.baseText, {fontSize:17, fontWeight:'bold'}]}>{activity.sport}</Text>  
+                    <Text style={globalStyles.baseText}>{activity.participants.length} {activity.participants.length > 1 ? ('inscrits'):('inscrit')} </Text>
+                  </View>
+                  
+                }/>
               </Callout>
             </Marker>
-          ))
+          )}})
           }
         </MapView>
 
@@ -176,7 +196,6 @@ return (
               fetchDetails={true}
               GooglePlacesSearchQuery={{rankby:'distance'}}
               onPress={(data, details = null) => {
-                // 'details' is provided when fetchDetails = true
                 setRegion({
                   latitude: details.geometry.location.lat,
                   longitude: details.geometry.location.lng,
