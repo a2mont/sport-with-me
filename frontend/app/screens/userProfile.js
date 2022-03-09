@@ -92,7 +92,7 @@ export default function UserProfile({navigation}) {
   return (
     <View style={globalStyles.container}>
       {user && 
-        <View style={{alignItems:'center', justifyContent:'center', marginVertical:50}}>
+        <View style={{alignItems:'center', justifyContent:'center', marginVertical:70}}>
           <View style={{backgroundColor:colors.buttonsBackground, borderRadius:50, padding:15, marginVertical:10,}}>
             <AntDesign name='user' size={55} color={colors.textLight}/>
           </View>
@@ -101,7 +101,7 @@ export default function UserProfile({navigation}) {
             <Text style={styles.item}>Email</Text>
             <Text style={styles.item}>{user.email}</Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('About')} style={{marginTop:'40%'}}>
+          <TouchableOpacity onPress={() => navigation.navigate('About')} style={{marginTop:'30%', marginBottom:'10%'}}>
             <Text style={[globalStyles.baseText, {fontSize:18,fontStyle:'italic',}]}>Comment utiliser Pelops ?</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={createActivitiesAlert} style={{marginVertical:10}}>

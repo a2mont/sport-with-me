@@ -12,6 +12,7 @@ import CreateActivity from './createActivity';
 import {Context as AuthContext} from '../context/authContext';
 import FloatingButton from '../components/floatButton';
 import MarkerCallout from '../components/markerCallout';
+import Message from '../components/message';
 
 export default function Home({navigation}) {
   const [delta, setDelta] = useState(0.01);
@@ -19,6 +20,7 @@ export default function Home({navigation}) {
     latitude:46.8,
     longitude:7.17,
   });
+  const [moved, setMoved] = useState(null);
   const [posLoaded,setPosLoaded] = useState(false);
   const [activities,setActivities] = useState([]);
   const [update,setUpdate] = useState(false);
@@ -143,9 +145,11 @@ return (
                 }
                 }
                 showsMyLocationButton={false}
+                onRegionChangeComplete={(r) => {
+                  setMoved(r);
+                }}
             >
-          {
-            marker && 
+          {marker && 
             <Marker 
               coordinate={marker} 
               title='Create activity'
@@ -167,7 +171,7 @@ return (
             </Marker>
           }
           {activities.map(activity =>{
-          if((Math.abs(activity.location.latitude - region.latitude) < delta ) && (Math.abs(activity.location.longitude - region.longitude) < delta))
+          if((Math.abs(activity.location.latitude - region.latitude) < delta*5 ) && (Math.abs(activity.location.longitude - region.longitude) < delta*5))
           
             {return(
             <Marker
@@ -217,6 +221,20 @@ return (
         latitudeDelta: delta,
         longitudeDelta: delta
       })}/>
+      {moved != null && (Math.abs(moved.latitude - region.latitude) > delta/5 ) && (Math.abs(moved.longitude - region.longitude) > delta/5) &&
+      <TouchableOpacity onPress={() => {
+        setRegion(moved);
+        setMoved(null);
+      }}
+      style={{position:'absolute', alignSelf:'center', top:'12.5%'}}
+      >
+        <Message text='Chercher des activités dans cette région' style={{
+          backgroundColor:`${colors.textLight}ff`, 
+          alignSelf:'center', 
+          justifyContent:'center',
+          borderRadius:10,
+        }}/>
+      </TouchableOpacity>}
       <Modal
         animationType="slide"
         transparent={true}

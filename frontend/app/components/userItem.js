@@ -5,7 +5,7 @@ import { MaterialIcons   } from '@expo/vector-icons';
 import {Context as AuthContext} from '../context/authContext';
 import { colors } from '../styles/global';
 
-export default function UserItem({ pressHandler, user, marked}) {
+export default function UserItem({ pressHandler, user, marked, creator}) {
   const [unsub, setUnsub] = useState(false);
   const {state,dispatch} = useContext(AuthContext);
 
@@ -26,21 +26,15 @@ export default function UserItem({ pressHandler, user, marked}) {
         {marked ? 
       (<View style={styles.markedItem}>
         <Text style={styles.markedTextElement}>{user.name.firstname} {user.name.lastname}, <Text style={{fontSize:12, fontStyle:'italic'}}>Organisateur.trice</Text></Text>
-        <TouchableOpacity onPress={unsubscribeHandler}>
-          {user.id == state.id && 
-            (!unsub ? 
-              (<MaterialIcons name="close" size={20} style={[styles.markedTextElement, {fontSize:20}]}/>): 
-              (<Text style={[styles.markedTextElement, {color:colors.error, fontWeight:'bold'}]}>Se désinscrire ?</Text>))}
-        </TouchableOpacity>
       </View>):
       (
         <View style={styles.simpleItem}>
         <Text style={styles.simpleTextElement}>{user.name.firstname} {user.name.lastname}</Text>
         <TouchableOpacity onPress={unsubscribeHandler}>
-          {user.id == state.id && 
+          {(user.id == state.id || state.id == creator) && 
             (!unsub ? 
               (<MaterialIcons name="close" size={20} style={[styles.simpleTextElement, {fontSize:20}]}/>): 
-              (<Text style={[styles.simpleTextElement, {color:colors.error, fontSize: 15}]}>Se désinscrire ?</Text>))}
+              (<Text style={[styles.simpleTextElement, {color:colors.error, fontSize: 15}]}>{user.id == state.id ? "Se désinscrire ?" : "Supprimer"}</Text>))}
         </TouchableOpacity>
       </View>
       )}

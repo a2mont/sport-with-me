@@ -254,7 +254,7 @@ export default function ActivityDetails({navigation, route}) {
                   data={activityData.participants}
                   keyExtractor={(item, index) => item.id.toString()}
                   renderItem={({item}) => 
-                    <UserItem user={item} pressHandler={() => modalPressHandler(item.id)} marked={item.id == activityData.creator.id}/>
+                    <UserItem user={item} pressHandler={() => modalPressHandler(item.id)} marked={item.id == activityData.creator.id} creator={activityData.creator.id}/>
                   }
                 />
               </View>
