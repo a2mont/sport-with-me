@@ -25,7 +25,7 @@ PORT=3030
 
 # JWT
 
-JWT_SECRET=mysuperdupersecretthatsincredible
+JWT_SECRET=somesecret
 
 # MongoDb
 
