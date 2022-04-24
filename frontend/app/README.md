@@ -19,7 +19,7 @@ npm install
 
 ### Before starting
 
-For the app to function fully, you need to have the [related RESTapi](../../backend/README.md) running. If you want to use the complete functionalities, you also have to have a Google Places API key with its corresponding billing account. These informations need to be stored in a _.env_ file with the structure :
+For the app to function fully, you need to have the related [RESTapi](../../backend/README.md) running. If you want to use the complete functionalities, you also have to have a Google Places API key with its corresponding billing account. These informations need to be stored in a _.env_ file with the structure :
 
 ```
 # Google places
