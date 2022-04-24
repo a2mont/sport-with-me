@@ -1,25 +1,15 @@
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
-const Mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-auto-increment');
 const Swagger = require('./middlewares/swagger');
 const SwaggerUi = require('koa2-swagger-ui');
 const Routes = require('./routes');
 const Cors = require('@koa/cors');
+const db = require('./db/db');
 require('dotenv').config();
 
-// Options to use with mongoose (mainly to avoid deprecacy warnings)
-const mongooseOptions = {
-    useCreateIndex: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-};
-// Connect to the MongoDB database
-Mongoose.connect(`mongodb://localhost:${process.env.MONGO_PORT}/sport-with-me`, mongooseOptions);
-// Use auto increment for models
-AutoIncrement.initialize(Mongoose.connection);
+
+db.connectDB();
 
 
 // Create the Koa app
@@ -34,9 +24,10 @@ const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Sport with me',
+            title: 'Pelops',
             version: '1.0.0',
-            description: 'Travail de bachelor',
+            description: `Travail de bachelor réalisé pour l'université de Fribourg. Cette page décrit l'API REST permettant la
+            création d'activités par un utilisateur enregistré.`,
         },
     },
     /** 
@@ -54,14 +45,6 @@ const swaggerOptions = {
 
 // Call our own middleware (see in file)
 const swagger = Swagger(swaggerOptions);
-
-// Build the UI for swagger and expose it on the /doc endpoint
-/* const swaggerUi = SwaggerUi({
-    routePrefix: '/doc',
-    swaggerOptions: {
-        url: swaggerOptions.path,
-    }
-}); */
 // Register all middlewares, in the right order
 app
     .use(Cors())

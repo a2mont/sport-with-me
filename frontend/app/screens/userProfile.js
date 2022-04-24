@@ -13,20 +13,14 @@ export default function UserProfile({navigation}) {
   const [message, setMessage] = useState('');
   const {state, signout} = useContext(AuthContext);
 
-
-  useEffect(() => {
-    let mounted = true;
-    if (mounted)
-      loadInfos();
-    return () => {mounted = false;}
-  }, []);
-
+  // Update user info on screen focus
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => loadInfos());
 
     return unsubscribe;
   }, [navigation]);
 
+  // Get the user infos from the api 
   const loadInfos = async () => {
     const userInfos = await Api.getUserInfos(state.id);
     const userActivities = await Api.getUserActivities(state.id);

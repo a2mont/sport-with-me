@@ -46,7 +46,6 @@ export default function BottomTabNavigator(){
         >
             
             <Screen name='Activities' component={ActivitiesNavigator} />
-            {/*<Screen name='Home' component={DrawerNavigator} />*/}
             <Screen name='Home' component={HomeNavigator} options={({navigation}) => 
                 ({ headerTitle: props => <Header navigation={navigation} {...props} /> })}
                 />

@@ -5,7 +5,7 @@ import {Provider as AuthProvider} from './context/authContext';
 import StartNavigator from './routes/startStack';
 
 
-export default function App({navigation}) {
+export default function App() {
   return (
     <AuthProvider>
       <NavigationContainer>

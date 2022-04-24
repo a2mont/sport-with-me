@@ -185,12 +185,6 @@ let controller = {
      *     summary: List all activities
      *     tags: 
      *       - activities
-     *     parameters:
-     *       - name: owner_id
-     *         in: query
-     *         description: the id of the owner (optional)
-     *         schema: 
-     *           type: string
      *     responses:
      *       '200':
      *         description: success
@@ -227,17 +221,6 @@ let controller = {
 
     list: async (ctx) => {
         const req = {};
-        //console.log(ctx.query.owner_id);
-        if (ctx.query.owner_id) {
-            try {
-                const user = await User.findById(ctx.query.owner_id).exec();
-                //console.log(user);
-                req.creator = user._id;
-            } catch (err) {
-                console.log(err);
-                req.creator = null;
-            }
-        }
         if (ctx.user) req.creator = ctx.user._id;
         let activities = await Activity.find(req)
             .populate('creator')

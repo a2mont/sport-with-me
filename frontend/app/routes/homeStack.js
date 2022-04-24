@@ -1,6 +1,5 @@
 import React from 'react'
 import { createStackNavigator } from "@react-navigation/stack";
-import { Text } from 'react-native';
 import Home from "../screens/home";
 import ActivityDetails from "../screens/activityDetails";
 import { colors } from '../styles/global';
