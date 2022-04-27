@@ -9,3 +9,7 @@ More informations on the api can be accessed here : [API](backend/README.md)
 ## React Native client
 
 More informations on the mobile client can be accessed here : [Mobile client](frontend/app/README.md)
+
+## Documentation
+
+This section contains the report written on this project as well as a video demonstration of the usage of the app.
