@@ -13,7 +13,8 @@ const {
 
 const options = {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false,
 };
 // Connect to the MongoDB database
 // Use auto increment for models
@@ -27,6 +28,7 @@ module.exports = {
         try {
             mongoose.connect(url, options).then(
             AutoIncrement.initialize(mongoose.connection));
+            mongoose.set('useCreateIndex', true);
             if(DEBUG) console.log("db.js: Successfuly connected to db...")
         } catch (error) {
             if(DEBUG) console.log("db.js: Error connecting to database: " + error)

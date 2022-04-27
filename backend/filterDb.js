@@ -7,10 +7,13 @@ var treshold = moment().subtract(1, 'days').toDate();
 
 db.connectDB();
 
+console.log("Treshold : " + treshold);
+
 // Delete passed activities
-Activity.find({date:{day : {$lte : treshold}}}).remove().exec().then((RemoveStatus) => {
+Activity.deleteMany({"date.day" : {$lte : treshold}}).exec().then((removed) => {
     console.log("Documents Removed Successfully");
+    console.log(removed);
 }).catch((err) => {
-    console.error('something error');
+    console.error('something went wrong');
     console.error(err);
 })

@@ -76,12 +76,12 @@ activitySchema.method('toClient', function () {
 
     return obj;
 });
-
-Mongoose.model('Activity', activitySchema);
-
-module.exports = Mongoose.model('Activity');
 AutoIncrement.initialize(Mongoose.connection);
 activitySchema.plugin(AutoIncrement.plugin, {
     model: 'Activity',
     startAt: 1,
 });
+Mongoose.model('Activity', activitySchema);
+
+module.exports = Mongoose.model('Activity');
+

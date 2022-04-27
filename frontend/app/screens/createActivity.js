@@ -83,45 +83,33 @@ export default function ActivityForm({addActivity, activityLocation}){
                                 <SearchableDropdown
                                     nestedScrollEnabled 
                                     onTextChange={(text) => {}}
-                                    //On text change listner on the searchable input
                                     onItemSelect={(item) => {
                                         props.values.sport=item.name;
                                         setSelectedSport(item.name);
                                     }}
-                                    //onItemSelect called after the selection from the dropdown
                                     containerStyle={{}}
-                                    //suggestion container style
                                     textInputStyle={globalStyles.textInputContent}
                                     itemStyle={{
-                                        //single dropdown item style
                                         padding: 10,
                                         marginTop: 2,
                                         backgroundColor: colors.textLight,
                                     }}
                                     itemTextStyle={{
-                                        //text style of a single dropdown item
                                         color: colors.textDark,
                                     }}
                                     itemsContainerStyle={{
-                                        //items container style you can pass maxHeight
-                                        //to restrict the items dropdown height
                                         maxHeight: '80%',
                                         
                                     }}
                                     items={sportsList}
-                                    //mapping of item array
                                     defaultIndex={0}
-                                    //default selected item index
                                     placeholderTextColor={colors.textLight}
                                     placeholder={selectedSport}
-                                    //place holder for the search input
                                     resetValue={false}
-                                    //reset textInput Value with true and false state
                                     underlineColorAndroid="transparent"
                                     listProps={{
                                         maxToRenderPerBatch:10,
                                         initialNumToRender:10}}
-                                    //To remove the underline from the android input
                                 />
                             </SafeAreaView>
                         </View>
@@ -196,7 +184,7 @@ export default function ActivityForm({addActivity, activityLocation}){
                                 </View>
                             </View>
                             
-                            {!correct && <Text style={[globalStyles.errorText, {alignSelf:'center'}]}>L'activité n'est pas correctment remplie</Text>}
+                            {!correct && <Text style={[globalStyles.errorText, {alignSelf:'center'}]}>L'activité n'est pas correctement remplie</Text>}
                             <View style={{marginVertical:20}}>
                                 <CustomButton onPress={() => {props.handleSubmit();}} title="C'est parti !"/>
                             </View>
