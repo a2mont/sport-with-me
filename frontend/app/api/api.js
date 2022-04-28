@@ -1,12 +1,11 @@
 import Client from './client';
-//#region Status Codes
+// Status Codes
 const SUCCESS = 200;
 const CREATED = 201;
 const DELETED = 204;
 const INVALID_REQUEST = 400;
 const NOT_FOUND = 404;
 const NOT_UNIQUE = 409; 
-//#endregion
 
 const getAllActivities = async () => {
     try{

@@ -42,3 +42,7 @@ MONGO_HOSTNAME=hostname
 ### Once started
 
 A short documentation of the API is available at : `localhost:<PORT_NUMBER>/doc`
+
+### To delete passed activities
+
+`node filterDb.js`
